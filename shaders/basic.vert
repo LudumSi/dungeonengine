@@ -1,14 +1,11 @@
-#version 140
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTex;
 
-in vec2 position;
-in vec2 tex_coords;
+out vec2 texCoord;
 
-uniform mat4 matrix;
-
-out vec2 v_tex_coords;
-
-void main() {
-  v_tex_coords = tex_coords;
-  gl_Position = vec4(position, 0.0, 1.0);
-  gl_Position = matrix * gl_Position;
+void main()
+{
+	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	texCoord = aTex;
 }

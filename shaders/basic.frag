@@ -1,17 +1,19 @@
-#version 140
+#version 330 core
 
-in vec2 v_tex_coords;
-out vec4 frag;
+out vec4 FragColor;
+in vec2 texCoord;
 
 //Alpha cutoff not to render
 float cutoff = 1.0;
 
-uniform sampler2D tex;
+uniform sampler2D outTexture;
 
-void main() {
-  frag = texture(tex, v_tex_coords);
-
-  if(frag.a < cutoff){
-    discard;
-  }
+void main()
+{
+	
+	FragColor = texture(outTexture, texCoord);
+	
+	if(FragColor.a < cutoff){
+		discard;
+	}
 }

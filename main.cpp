@@ -5,13 +5,26 @@
 #include "GLFW\glfw3.h"
 #include <GL\GL.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#include "ecstest.h"
+
 using namespace std;
 
 //Hello triangle triangle
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
+	// positions          // texture coords
+	 0.5f,  0.5f, 0.0f,   1.0f, 1.0f,   // top right
+	 0.5f, -0.5f, 0.0f,   1.0f, 0.0f,   // bottom right
+	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,   // bottom left
+	-0.5f,  0.5f, 0.0f,   0.0f, 1.0f    // top left 
+};
+
+//Indices for triangles
+unsigned int indices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
 };
 
 //Function to get shader file data
@@ -45,7 +58,7 @@ unsigned int get_shaders() {
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-	string vertexSource = get_file("basic.vert");
+	string vertexSource = get_file("shaders/basic.vert");
 	if (vertexSource.length() <= 0) { 
 		cout << "Vertex shader could not be loaded!" << endl; 
 		exit(1); 
@@ -70,7 +83,7 @@ unsigned int get_shaders() {
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	string fragSource = get_file("basic.frag");
+	string fragSource = get_file("shaders/basic.frag");
 
 	if (fragSource.length() <= 0) {
 		cout << "Fragment shader could not be loaded!" << endl;
@@ -106,6 +119,34 @@ unsigned int get_shaders() {
 	return shaderProgram;
 }
 
+//Sets up sexture
+unsigned int setup_texture() {
+	
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// load and generate the texture
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("wiz.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	return texture;
+}
+
 //GLFW error callback function
 void error_callback(int error, const char* description)
 {
@@ -113,6 +154,8 @@ void error_callback(int error, const char* description)
 }
 
 int main() {
+
+	ecstest();
 
 	//Initialize GLFW
 	if (!glfwInit())
@@ -146,9 +189,10 @@ int main() {
 
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
 	//Will only be a static image without this being updated
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
 
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -156,20 +200,34 @@ int main() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	//Set up the attribute pointers for the shaders
+	// X, Y, Z, S, T
+	//Positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	//Textures
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	//Set up shaders
 	unsigned int shaderProgram = get_shaders();
 
+	//Set up textures
+	stbi_set_flip_vertically_on_load(true);
+	unsigned int texture = setup_texture();
+
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{
-
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
