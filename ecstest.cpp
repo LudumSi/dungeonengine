@@ -7,53 +7,62 @@ NameComp::NameComp(std::string str) {
 
 void NameSystem::update() {
 
-	for (int i = 0; i < names->components.size(); i++) {
-		std::cout << names->components[i].name << std::endl;
+	for (int i = 0; i < entities.size(); i++) {
+		std::cout << names->get_component(entities[i])->name << std::endl;
 	}
+}
+
+void NameSystem::init() {
+	return;
 }
 
 void ecstest() {
 
+	World world;
 	ComponentManager<NameComp> namemanager;
 	EntityManager emanager;
 	NameSystem system;
-	system.names = &namemanager;
 
-	Entity e1 = emanager.create_entity();
-	Entity e2 = emanager.create_entity();
-	Entity e3 = emanager.create_entity();
-	Entity e4 = emanager.create_entity();
+	world.add_manager<NameComp>(&namemanager);
+
+	world.subscribe_system<NameComp>(&system);
+	system.names = world.get_manager<NameComp>();;
+
+	EntityHandle e1 = world.create_entity();
+	EntityHandle e2 = world.create_entity();
+	EntityHandle e3 = world.create_entity();
+	EntityHandle e4 = world.create_entity();
 
 	NameComp name1 = NameComp(std::string("Alice"));
 	NameComp name2 = NameComp(std::string("Bob"));
 	NameComp name3 = NameComp(std::string("Carol"));
 	NameComp name4 = NameComp(std::string("Dan"));
 
-	namemanager.add_component(e1, name1);
-	namemanager.add_component(e2, name2);
-	namemanager.add_component(e3, name3);
-	namemanager.add_component(e4, name4);
+	e1.add<NameComp>(name1);
+	e2.add<NameComp>(name2);
+	e3.add<NameComp>(name3);
+	e4.add<NameComp>(name4);
 
 	system.update();
 
-	namemanager.remove_component(e2);
+	e2.destroy();
 
 	system.update();
 
-	if (namemanager.has_component(e2)) {
+	if (e2.has<NameComp>()) {
 		std::cout << "Has component (Not good)!" << std::endl;
 	}
 	else {
 		std::cout << "Doesn't have component (good)!" << std::endl;
 	}
 
-	namemanager.remove_component(e1);
-	namemanager.remove_component(e3);
-	namemanager.remove_component(e4);
+	e1.remove<NameComp>();
+	e3.remove<NameComp>();
+	e4.remove<NameComp>();
 
 	system.update();
 
-	namemanager.add_component(e2, name1);
+	e2.add<NameComp>(name1);
 
 	system.update();
 }

@@ -15,6 +15,7 @@ class NameSystem : public System {
 	public:
 		ComponentManager<NameComp>* names;
 		void update();
+		void init();
 };
 
 void ecstest();

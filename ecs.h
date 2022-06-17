@@ -4,6 +4,8 @@
 #include <vector>
 #include <map>
 #include <iterator>
+#include <typeinfo>
+#include <iostream>
 
 //Entity. Literally just an id.
 typedef unsigned int Entity;
@@ -21,11 +23,19 @@ class EntityManager {
 		//void delete_entity();
 };
 
+
+
 //Base component class for components to inherit from
 class Component;
 
+//Component base class
+class CompManagerBase {
+	public:
+		virtual void remove_component(Entity)=0;
+};
+
 template <class CompType>
-class ComponentManager {
+class ComponentManager: public CompManagerBase {
 
 	private:
 		//Map from entities to index in vector of components
@@ -44,8 +54,7 @@ class ComponentManager {
 		CompType* get_component(Entity);
 
 		//Actual vector of components
-		//NEVER just add or remove stuff from it
-		//Look into returning an iterator instead
+		//Look into returning an iterator on this
 		std::vector<CompType> components;
 };
 
@@ -105,22 +114,191 @@ CompType* ComponentManager<CompType>::get_component(Entity e) {
 
 class System {
 
-	private:
+	protected:
 		//Array of entities the system cares about
 		std::vector<Entity> entities;
 
-		//TODO: Needs some way of showing which components it cares about
+		//Array of component managers. Can be used to show the component types
 
 	public:
 		
 		//Register entity
+		void register_entity(Entity);
 		//Unregister entity
+		void deregister_entity(Entity);
 
 		//Update function
 		virtual void update() = 0;
 
 		//Initialize function
 		virtual void init() = 0;
+};
+
+class EntityHandle;
+class World {
+
+	public:
+		//Create an entity handle
+		EntityHandle create_entity();
+
+		//Delete an entity entirely
+		//Probably has some fairly large overhead
+		void delete_entity(Entity e) {
+
+			//Remove the entity and all its components from all component managers
+			for (std::map<const char*, CompManagerBase*>::iterator it = managers.begin(); it != managers.end(); ++it) {
+				it->second->remove_component(e);
+			}
+
+			//Remove the entity from all systems
+			for (int i = 0; i < systems.size(); i++) {
+				systems[i]->deregister_entity(e);
+			}
+		}
+
+		//Add a component to an entity
+		//Also updates systems
+		template <typename CompType>
+		void add_component(Entity e, CompType comp) {
+			ComponentManager<CompType>* manager = get_manager<CompType>();
+			manager->add_component(e,comp);
+
+			std::vector<int> indices = subscribers[get_manager_id<CompType>()];
+			for (int i = 0; i < indices.size(); i++) {
+				systems[indices[i]]->register_entity(e);
+			}
+		}
+
+		//Remove a given component from an entity
+		//Also updates systems
+		template <typename CompType>
+		void remove_component(Entity e) {
+			ComponentManager<CompType>* manager = get_manager<CompType>();
+			manager->remove_component(e);
+
+			std::vector<int> indices = subscribers[get_manager_id<CompType>()];
+			for (int i = 0; i < indices.size(); i++) {
+				systems[indices[i]]->deregister_entity(e);
+			}
+		}
+
+		//Sees if the entity has the given component
+		template <typename CompType>
+		bool has_component(Entity e) {
+			ComponentManager<CompType>* manager = get_manager<CompType>();
+			return manager->has_component(e);
+		}
+
+		//Returns a pointer to a component for a given entity
+		template <typename CompType>
+		CompType* get_component(Entity e) {
+			ComponentManager<CompType>* manager = get_manager<CompType>();
+			return manager->get_component(e);
+		}
+
+		//Add a component manager
+		template <typename CompType>
+		void add_manager(ComponentManager<CompType>* man) {
+			const char* id = typeid(CompType).name();
+			managers[id] = (CompManagerBase*)man;
+		}
+
+		//Get a component manager
+		template <typename CompType>
+		ComponentManager<CompType>* get_manager() {
+			
+			CompManagerBase* candidate = managers[get_manager_id<CompType>()];
+			//This line of code is horrifically unsafe
+			//...but it works :)
+			ComponentManager<CompType>* manager = static_cast<ComponentManager<CompType>*>(candidate);
+			if (manager) {
+				return manager;
+			}
+			else {
+				//More than likely this code will never be called due to static cast always "working"
+				std::cout << "Could not cast manager for type " << *typeid(CompType).name() << std::endl;
+				exit(1);
+			}
+		}
+
+		//Subscribe a system to a component manager
+		//Adds the system if it hasn't been already
+		template <typename CompType>
+		void subscribe_system(System* sys) {
+
+			if (!system_indices.count(sys)) {
+				add_system(sys);
+			}
+			subscribers[get_manager_id<CompType>()].push_back(system_indices[sys]);
+		}
+		
+		//Add a system
+		void add_system(System* sys) {
+			system_indices[sys] = systems.size();
+			systems.push_back(sys);
+		}
+
+	private:
+
+		//Check to ensure that the given type exists in the managers array
+		template <typename CompType>
+		const char* get_manager_id() {
+			const char* id = typeid(CompType).name();
+			if (managers.count(id)) {
+				return id;
+			}
+			else {
+				std::cout << "Could not find manager for type " << *typeid(CompType).name() << std::endl;
+				exit(1);
+			}
+		}
+
+		//Entity manager
+		EntityManager e_manager;
+
+		//Map of component ids to component managers
+		std::map<const char*,CompManagerBase*> managers;
+
+		//Vector of systems
+		std::vector<System*> systems;
+		//Map of systems back to indices
+		std::map<System*, int> system_indices;
+
+		//Map of manager pointers to vectors of indices of systems which need to be updated
+		std::map<const char*, std::vector<int>> subscribers;
+};
+
+//Entity handle, for making working with entities easier
+class EntityHandle {
+
+public:
+	Entity entity;
+	World* world;
+	EntityHandle(Entity, World*);
+
+	void destroy() {
+		world->delete_entity(entity);
+	};
+
+	template <typename CompType>
+	void add(CompType c) {
+		world->add_component<CompType>(entity, c);
+	}
+
+	template <typename CompType>
+	void remove() {
+		world->remove_component<CompType>(entity);
+	}
+
+	template <typename CompType>
+	bool has() {
+		return world->has_component<CompType>(entity);
+	}
+
+	template <typename CompType>
+	CompType* get() {
+		return world->get_component<CompType>(entity);
+	}
 };
 
 #endif
