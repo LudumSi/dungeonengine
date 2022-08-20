@@ -4,7 +4,7 @@ out vec4 FragColor;
 in vec2 texCoord;
 
 //Alpha cutoff not to render
-float cutoff = 1.0;
+float cutoff = 0.9;
 
 uniform sampler2D outTexture;
 

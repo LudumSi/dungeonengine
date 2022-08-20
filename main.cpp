@@ -8,6 +8,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "texture_atlas.h"
 #include "ecstest.h"
 
 using namespace std;
@@ -122,6 +123,8 @@ unsigned int get_shaders() {
 //Sets up sexture
 unsigned int setup_texture() {
 	
+	TextureAtlas atlas = TextureAtlas(256,2);
+
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -132,17 +135,21 @@ unsigned int setup_texture() {
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("wiz.png", &width, &height, &nrChannels, STBI_rgb_alpha);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
+	pixel* data = (pixel*)stbi_load("assets/debug/gradient.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+
+	atlas.copy_image(data, width, height, 0, 0);
+
+	//stbi_image_free(data);
+	data = (pixel*)stbi_load("assets/entities/wiz.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+
+	atlas.copy_image(data, width, height, 256, 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.scanline_size, atlas.scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.buffer);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//stbi_image_free(data);
+
+
 
 	return texture;
 }
@@ -155,7 +162,7 @@ void error_callback(int error, const char* description)
 
 int main() {
 
-	ecstest();
+	//ecstest();
 
 	//Initialize GLFW
 	if (!glfwInit())

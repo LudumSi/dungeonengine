@@ -26,7 +26,7 @@ void ecstest() {
 	world.add_manager<NameComp>(&namemanager);
 
 	world.subscribe_system<NameComp>(&system);
-	system.names = world.get_manager<NameComp>();;
+	system.names = world.get_manager<NameComp>();
 
 	EntityHandle e1 = world.create_entity();
 	EntityHandle e2 = world.create_entity();

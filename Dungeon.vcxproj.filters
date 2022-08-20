@@ -27,12 +27,18 @@
     <ClCompile Include="ecstest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="texture_atlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ecs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ecstest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_atlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
