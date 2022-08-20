@@ -133,24 +133,18 @@ unsigned int setup_texture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// load and generate the texture
-	int width, height, nrChannels;
-	pixel* data = (pixel*)stbi_load("assets/debug/gradient.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+	Texture gradient = Texture("assets/debug/gradient.png");
 
-	atlas.copy_image(data, width, height, 0, 0);
+	atlas.buffer->copy_image(&gradient, 0, 0);
 
-	//stbi_image_free(data);
-	data = (pixel*)stbi_load("assets/entities/wiz.png", &width, &height, &nrChannels, STBI_rgb_alpha);
+	Texture wiz = Texture("assets/entities/wiz.png");
 
-	atlas.copy_image(data, width, height, 256, 0);
+	atlas.buffer->copy_image(&wiz, 256, 0);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.scanline_size, atlas.scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.buffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.scanline_size, atlas.scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.buffer->buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	//stbi_image_free(data);
-
-
-
 	return texture;
 }
 

@@ -5,8 +5,7 @@
 #include <map>
 #include <string>
 #include "glm/glm.hpp"
-
-typedef uint32_t pixel;
+#include "texture.h"
 
 class TextureAtlas {
 
@@ -39,19 +38,8 @@ class TextureAtlas {
 		//Length of a single scanline
 		int scanline_size;
 
-		//Total buffer size
-		int buffer_size;
-
-		//2D buffer of image data
-		//Should be deleted once sent to the GPU
-		pixel* buffer;
-
-		//Function to add image data to a the buffer at arbitary texture coordinates
-		//Frees the image data after
-		void copy_image(pixel*, int, int, int, int);
-
-		//Debug function to print out all data
-		void print_image();
+		//Texture buffer
+		Texture* buffer;
 };
 
 #endif
