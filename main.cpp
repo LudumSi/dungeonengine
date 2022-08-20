@@ -123,7 +123,7 @@ unsigned int get_shaders() {
 //Sets up sexture
 unsigned int setup_texture() {
 	
-	TextureAtlas atlas = TextureAtlas(256,2);
+	TextureAtlas atlas = TextureAtlas(256,3);
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -133,15 +133,13 @@ unsigned int setup_texture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	Texture gradient = Texture("assets/debug/gradient.png");
+	atlas.add_image("assets/debug/gradient.png");
+	atlas.add_image("assets/entities/wiz.png");
+	atlas.add_image("assets/entities/wiz.png");
+	atlas.add_image("assets/entities/wiz.png");
+	atlas.add_image("assets/entities/wiz.png");
 
-	atlas.buffer->copy_image(&gradient, 0, 0);
-
-	Texture wiz = Texture("assets/entities/wiz.png");
-
-	atlas.buffer->copy_image(&wiz, 256, 0);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.scanline_size, atlas.scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.buffer->buffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.scanline_size, atlas.scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.texture->buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	//stbi_image_free(data);
