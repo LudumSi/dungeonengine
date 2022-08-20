@@ -30,7 +30,7 @@ class TextureAtlas {
 
 	public:
 
-		TextureAtlas(int resolution, int side_len);
+		TextureAtlas(int resolution, int side_len, const char* missing_tex_path);
 		~TextureAtlas();
 
 		//Length of a single scanline
@@ -40,7 +40,9 @@ class TextureAtlas {
 		Texture* texture;
 		
 		//Function to add an image file to the atlas
+		void add_image(const char* path, const char* name);
 		void add_image(const char* path);
+
 
 		//Function to retrieve texture coordinates from the atlas based on texture name
 		//Eventually should spit out a missing texture if not recognizes

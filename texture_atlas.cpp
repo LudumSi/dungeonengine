@@ -3,7 +3,7 @@
 #include <stb_image.h>
 #include <iostream>
 
-TextureAtlas::TextureAtlas(int chunk, int size) {
+TextureAtlas::TextureAtlas(int chunk, int size, const char* missing_tex) {
 	resolution = chunk;
 	side_len = size;
 
@@ -29,6 +29,9 @@ TextureAtlas::TextureAtlas(int chunk, int size) {
 
 	//side_len x side_len chunks, each of which are resolution x resolution
 	texture = new Texture(scanline_size,scanline_size);
+
+	//Load the missing texture based on the missing texture path
+	add_image(missing_tex);
 }
 
 TextureAtlas::~TextureAtlas() {
@@ -48,7 +51,7 @@ TextureAtlas::~TextureAtlas() {
 	}
 }
 
-void TextureAtlas::add_image(const char* path) {
+void TextureAtlas::add_image(const char* path, const char* name) {
 
 	//Check to make sure there are available coordinates
 	if (next_y >= side_len) {
@@ -79,7 +82,7 @@ void TextureAtlas::add_image(const char* path) {
 	texture->copy_image(&image, next_x * resolution, next_y * resolution);
 
 	//Save the texture coords in the dictionary along with the texture name
-	atlas[std::string(path)] = glm::vec2(next_x * resolution, next_y * resolution);
+	atlas[std::string(name)] = glm::vec2(next_x * resolution, next_y * resolution);
 
 	//Update the next available coords
 	next_x++;
@@ -91,6 +94,21 @@ void TextureAtlas::add_image(const char* path) {
 	//Texture is deleted when it goes out of scope
 }
 
+void TextureAtlas::add_image(const char* path) {
+	TextureAtlas::add_image(path,path);
+}
+
 glm::vec2 TextureAtlas::get_coords(const char* name) {
-	return atlas[name];
+
+	std::map<std::string, glm::vec2>::iterator it;
+
+	//Return texture coordinates of the texture, otherwise
+	//Return debug texture
+	it = atlas.find(name);
+	if (it != atlas.end()) {
+		return it->second;
+	}
+	else {
+		return glm::vec2(0, 0);
+	}
 }
