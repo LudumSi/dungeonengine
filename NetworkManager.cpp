@@ -1,3 +1,4 @@
+/*
 #include "NetworkManager.h"
 
 
@@ -52,3 +53,4 @@ int NetworkManager::sock_bind() {
 
 	return 0;
 }
+*/

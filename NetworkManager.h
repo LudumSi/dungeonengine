@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <iostream>
@@ -26,4 +27,5 @@ public:
 	~NetworkManager();
 
 };
+*/
 
