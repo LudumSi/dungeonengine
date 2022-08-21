@@ -7,6 +7,10 @@ TextureAtlas::TextureAtlas(int chunk, int size) {
 	resolution = chunk;
 	side_len = size;
 
+	next_x = 0;
+	next_y = 0;
+
+	/*
 	//Create assignment grid and fill it with falses to indicate nothing has been moved
 	assignment_grid = new bool*[side_len];
 
@@ -16,25 +20,20 @@ TextureAtlas::TextureAtlas(int chunk, int size) {
 			assignment_grid[i][j] = false;
 		}
 	}
+	*/
 
 	//Create buffer and fill it with empty data
 	//At some point there should be a default missing texture which should be loaded in here as well
 
 	scanline_size = resolution * side_len;
 
-	buffer_size = scanline_size * scanline_size;
-
 	//side_len x side_len chunks, each of which are resolution x resolution
-	buffer = new pixel[buffer_size];
-
-	for (int i = 0; i < buffer_size; i++) {
-		buffer[i] = 0;
-	}
-
+	texture = new Texture(scanline_size,scanline_size);
 }
 
 TextureAtlas::~TextureAtlas() {
 
+	/*
 	if (assignment_grid) {
 		for (int i = 0; i < side_len; i++) {
 			delete[] assignment_grid[i];
@@ -42,62 +41,56 @@ TextureAtlas::~TextureAtlas() {
 
 		delete[] assignment_grid;
 	}
+	*/
 
-	if (buffer) {
-		stbi_image_free(buffer);
+	if (texture) {
+		delete texture;
 	}
-
 }
 
-void TextureAtlas::copy_image(pixel* input,int width,int height,int x, int y) {
+void TextureAtlas::add_image(const char* path) {
 
-	int buffer_x = x;
-	int buffer_y = y;
-
-	//std::cout << buffer_x << "," << buffer_y << "," << scanline_size << std::endl;
-
-	for (int input_y = 0; input_y < height; input_y++) {
-		//Copy a scanline of the image into the buffer
-
-		for (int input_x = 0; input_x < width; input_x++) {
-
-			//std::cout << "Moving " << (width * input_y) + input_x << " to " << (scanline_size * buffer_y) + buffer_x << std::endl;
-
-			buffer[(scanline_size * buffer_y) + buffer_x] = input[(width * input_y) + input_x];
-
-			//std::cout << (int)buffer[(scanline_size * buffer_y) + buffer_x] - (int)input[(width * input_y) + input_x] << ",";
-
-			//Check to ensure we're not going off the right side of the buffer
-			buffer_x++;
-			if (buffer_x >= scanline_size) {
-				break;
-				std::cout << "Went off right side" << std::endl;
-			}
-		}
-
-		//Check to ensure that we're not trying to go off the bottom of the buffer
-		buffer_y++;
-		if (buffer_y >= scanline_size) {
-			break;
-		}
-
-		buffer_x = x;
+	//Check to make sure there are available coordinates
+	if (next_y >= side_len) {
+		std::cout << "Cannot add " << path << " to texture atlas: Atlas full" << std::endl;
+		return;
 	}
 
-	stbi_image_free(input);
+	//Create a new texture based on the path
+	Texture image = Texture(path);
+
+	//Catch failure to load image
+	//Texture loader will already have printed an error
+	if (!image.buffer) return;
+
+	//Check that the image height and width are equal to atlas resolution
+	//At some point should handle integer multiples but we'll cross that bridge when we get to it
+	if (image.height != resolution) {
+		std::cerr << "Image " << path << " with a height of " << image.height << " is longer than " << resolution << std::endl;
+		return;
+	}
+
+	if (image.width != resolution) {
+		std::cerr << "Image " << path << " with a width of " << image.width << " is longer than " << resolution << std::endl;
+		return;
+	}
+
+	//Actually copy the new texture to the next available coordinates
+	texture->copy_image(&image, next_x * resolution, next_y * resolution);
+
+	//Save the texture coords in the dictionary along with the texture name
+	atlas[std::string(path)] = glm::vec2(next_x * resolution, next_y * resolution);
+
+	//Update the next available coords
+	next_x++;
+	if (next_x >= side_len) {
+		next_x = 0;
+		next_y++;
+	}
+
+	//Texture is deleted when it goes out of scope
 }
 
-void TextureAtlas::print_image() {
-
-	std::cout << "Printing image!" << std::endl;
-
-	for (int i = 0; i < scanline_size; i++) {
-		
-		for (int j = 0; j < scanline_size; j++) {
-
-			std::cout << std::hex << buffer[(scanline_size * i) + j];
-		}
-
-		std::cout << std::endl;
-	}
+glm::vec2 TextureAtlas::get_coords(const char* name) {
+	return atlas[name];
 }
