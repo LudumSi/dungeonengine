@@ -143,17 +143,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="ecs.cpp" />
     <ClCompile Include="ecstest.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture_atlas.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Client.h" />
     <ClInclude Include="ecs.h" />
     <ClInclude Include="ecstest.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture_atlas.h" />
     <ClInclude Include="NetworkManager.h" />

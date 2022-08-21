@@ -1,31 +1,35 @@
-/*
+
 #pragma once
 
 #include <iostream>
 #include <WS2tcpip.h>
 #include <array>
 
-#define MAX_CLIENTS 8
+#pragma comment(lib,"ws2_32.lib") //Winsock Library
+
+#define MAX_PACK_BYTES 1024
+
+struct packet {
+	uint16_t cmd_id;
+	size_t n_args;
+	byte* args;
+};
 
 class NetworkManager {
-private:
-	// Clients and Server Objects should be here
-	// Threads should be here/inside client/server objects
-
-	std::array<int, MAX_CLIENTS> clients;
-
+protected:
+	
 	const int port;
-	SOCKET serverSock;
-	sockaddr_in serverHint;
+	SOCKET listening_sock;
+	int listening_sockaddr_len;
+	sockaddr_in listening_sockaddr;
 
-	int sock_bind();
+	int bind_listener();
 	int winsock_init();
+	packet* decode_packet(packet*, int);
 
 public:
 
-	NetworkManager(int);
+	NetworkManager(const int);
 	~NetworkManager();
 
 };
-*/
-

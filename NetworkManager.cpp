@@ -1,24 +1,31 @@
-/*
+
 #include "NetworkManager.h"
 
 
 // Probably should add exceptions here
-NetworkManager::NetworkManager(int port = 25565) : port(port) {
+NetworkManager::NetworkManager(const int port = 25565) : port(port) {
+
 	winsock_init();
-	sock_bind();
-
-
+	if (port > 0) {
+		bind_listener();
+	}
 }
 
 NetworkManager::~NetworkManager() {
-	winsock_cleanup();
-
-	// Go through and force close all client sockets/threads
-	//
+	// Close socket
+	std::cout << "Deconstructing NetworkManager" << std::endl;
+	closesocket(listening_sock);
+	// Shutdown Winsock
+	WSACleanup();
 }
 
+packet* NetworkManager::decode_packet(packet * packet, int bytesIn) {
+	return nullptr;
+}
 
 int NetworkManager::winsock_init() {
+	std::cout << "Initializing winsock" << std::endl;
+
 	WSADATA data;
 	WORD version = MAKEWORD(2, 2);
 
@@ -30,22 +37,24 @@ int NetworkManager::winsock_init() {
 	}
 
 	return 0;
-
 }
 
-void winsock_cleanup() {
+int NetworkManager::bind_listener() {
+	std::cout << "Binding listening socket at port " << port << std::endl;
 
-}
+	// Setup Receiving socket local_sockaddrs for UDP and designated port
+	listening_sockaddr.sin_family = AF_INET;
+	listening_sockaddr.sin_port = htons(port);
+	listening_sockaddr.sin_addr.S_un.S_addr = ADDR_ANY;
+	listening_sockaddr_len = sizeof(listening_sockaddr);
 
-int NetworkManager::sock_bind() {
+	// Create Socket
+	listening_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-	serverSock = socket(AF_INET, SOCK_DGRAM, 0);
-	serverHint.sin_addr.S_un.S_addr = ADDR_ANY;
-	serverHint.sin_family = AF_INET;
-	serverHint.sin_port = htons(port);
+	// Bind to socket
+	int err =  bind(listening_sock, (sockaddr*)&listening_sockaddr, listening_sockaddr_len);
 
-	int err =  bind(serverSock, (sockaddr*)&serverHint, sizeof(serverHint));
-
+	// Handle Errors I guess
 	if (err == SOCKET_ERROR) {
 		std::cout << "Can't bind Socket " << WSAGetLastError() << std::endl;
 		return err;
@@ -53,4 +62,4 @@ int NetworkManager::sock_bind() {
 
 	return 0;
 }
-*/
+
