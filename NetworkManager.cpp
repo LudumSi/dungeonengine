@@ -19,9 +19,11 @@ NetworkManager::~NetworkManager() {
 	WSACleanup();
 }
 
+/*
 packet* NetworkManager::decode_packet(packet * packet, int bytesIn) {
 	return nullptr;
 }
+*/
 
 int NetworkManager::winsock_init() {
 	std::cout << "Initializing winsock" << std::endl;

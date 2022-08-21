@@ -11,6 +11,8 @@
 #include "texture_atlas.h"
 #include "ecstest.h"
 
+#include "Client.h"
+
 using namespace std;
 
 //Hello triangle triangle
@@ -156,6 +158,30 @@ void error_callback(int error, const char* description)
 int main() {
 
 	//ecstest();
+	std::string ip;
+	int port;
+	std::cout << "Enter IP: ";
+	std::cin >> ip;
+
+	std::cout << "Enter Port: ";
+	std::cin >> port;
+
+	Client c(port);
+
+	c.connect(ip.c_str());
+
+	std::string msg;
+
+	while (true) {
+		std::cout << "Input Message: ";
+		std::cin >> msg;
+
+		strcpy_s(c.out_buf, msg.c_str());
+		c.send();
+		c.recv();
+	}
+
+
 
 	//Initialize GLFW
 	if (!glfwInit())

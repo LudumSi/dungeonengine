@@ -14,7 +14,7 @@ Client::~Client() {
 	if (ip) delete[] ip;
 }
 
-int Client::connect(const char* ip, int port) {
+int Client::connect(const char* ip) {
 
 	if (this->ip) delete[] this->ip;
 	this->ip = new char[strlen(ip)];
@@ -60,7 +60,7 @@ int Client::recv() {
 }
 
 int Client::send() {
-	std::cout << "Sending message to server : " << out_buf << std::endl;
+	//std::cout << "Sending message to server : " << out_buf << std::endl;
 
 	int sendOk = sendto(server_sock, out_buf, MAX_PACK_BYTES, 0, (sockaddr*)&server_sockaddr, server_sockaddr_len);
 
@@ -69,7 +69,7 @@ int Client::send() {
 		return sendOk; // TODO: Better error handling
 	}
 	else {
-		std::cout << "Sent message to other_sockaddr : " << in_buf << std::endl;
+		//std::cout << "Sent message to other_sockaddr : " << out_buf << std::endl;
 		return 0;
 	}
 }

@@ -15,9 +15,15 @@ struct packet {
 	byte* args;
 };
 
+enum commands {
+	PLAINTEXT,
+
+};
+
 class NetworkManager {
 protected:
 	
+	// Port for sending/receiving information
 	const int port;
 	SOCKET listening_sock;
 	int listening_sockaddr_len;
@@ -25,7 +31,8 @@ protected:
 
 	int bind_listener();
 	int winsock_init();
-	packet* decode_packet(packet*, int);
+	//virtual void pk_to_bytes();
+	//virtual void bytes_to_pk();
 
 public:
 
