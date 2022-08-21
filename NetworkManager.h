@@ -10,30 +10,26 @@
 #define MAX_PACK_BYTES 1024
 
 struct packet {
-	
+	uint16_t cmd_id;
+	size_t n_args;
+	byte* args;
 };
 
 class NetworkManager {
-private:
+protected:
 	
 	const int port;
-	const char* ip;
-	SOCKET sock;
-	sockaddr_in local_sockaddr;
-	sockaddr_in other_sockaddr;
+	SOCKET listening_sock;
+	int listening_sockaddr_len;
+	sockaddr_in listening_sockaddr;
 
-	int sock_bind();
+	int bind_listener();
 	int winsock_init();
+	packet* decode_packet(packet*, int);
 
 public:
-
-	char * recv(bool, sockaddr_in *);
-	int send(char *, int, sockaddr_in *);
-	int connectTo(char *)
 
 	NetworkManager(const int);
 	~NetworkManager();
 
 };
-
-
