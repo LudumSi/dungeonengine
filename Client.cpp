@@ -54,6 +54,18 @@ int Client::recv() {
 		return -1; // TODO: Better error handling
 	}
 
+	if (!strcmp(in_buf, "connect")) {
+		// Bind to socket
+		int err = bind(listening_sock, (sockaddr*)&listening_sockaddr, listening_sockaddr_len);
+
+		// Handle Errors I guess
+		if (err == SOCKET_ERROR) {
+			std::cout << "Can't bind Socket " << WSAGetLastError() << std::endl;
+			return err;
+		}
+	}
+
+
 	std::cout << "Message recv: " << in_buf << std::endl;
 
 	return bytesIn;
