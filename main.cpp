@@ -12,6 +12,8 @@
 #include "ecstest.h"
 
 #include "Client.h"
+#include <mutex>
+#include <thread>
 
 using namespace std;
 
@@ -155,6 +157,23 @@ void error_callback(int error, const char* description)
 	fprintf(stderr, "Error: %s\n", description);
 }
 
+void send_func(Client * c) {
+	std::string msg;
+	while (true) {
+		std::cout << "Input Message. Q to quit: ";
+		getline(std::cin, msg);
+		if (msg == "Q") return;
+		strcpy_s(c->out_buf, msg.c_str());
+		c->send();
+	}
+}
+
+void recv_func(Client* c) {
+	while (true) {
+		c->recv();
+	}
+}
+
 int main() {
 
 	//ecstest();
@@ -169,17 +188,12 @@ int main() {
 	Client c(port);
 
 	c.connect(ip.c_str());
+	
+	std::thread th_snd(send_func, &c);
+	std::thread th_rcv(recv_func, &c);
 
-	std::string msg;
-
-	while (true) {
-		std::cout << "Input Message: ";
-		std::cin >> msg;
-
-		strcpy_s(c.out_buf, msg.c_str());
-		c.send();
-		c.recv();
-	}
+	th_snd.join();
+	th_rcv.join();
 
 
 
