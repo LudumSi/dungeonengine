@@ -7,7 +7,6 @@ Client::Client(int port) : NetworkManager(port) {
 	ZeroMemory(out_buf, MAX_PACK_BYTES);
 
 	ip = nullptr;
-	server_sockaddr_len = 0;
 }
 
 Client::~Client() {
@@ -22,20 +21,20 @@ int Client::connect(const char* ip) {
 	std::cout << "Connecting to Server at " << ip << ":" << port << std::endl;
 
 	// Setup Receiving socket local_sockaddrs for UDP and designated port
-	server_sockaddr.sin_family = AF_INET;
-	server_sockaddr.sin_port = htons(port);
-	inet_pton(AF_INET, ip, &server_sockaddr.sin_addr);
-	server_sockaddr_len = sizeof(server_sockaddr);
+	listening_sockaddr.sin_family = AF_INET;
+	listening_sockaddr.sin_port = htons(port);
+	inet_pton(AF_INET, ip, &listening_sockaddr.sin_addr);
+	listening_sockaddr_len = sizeof(listening_sockaddr);
 
 	// Create Socket
-	server_sock = socket(AF_INET, SOCK_DGRAM, 0);
+	listening_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
 	return 0;
 }
 
 int Client::disconnect() {
 	// Nothing for now
-	closesocket(server_sock);
+	closesocket(listening_sock);
 
 	return 0;
 }
@@ -54,18 +53,6 @@ int Client::recv() {
 		return -1; // TODO: Better error handling
 	}
 
-	if (!strcmp(in_buf, "connect")) {
-		// Bind to socket
-		int err = bind(listening_sock, (sockaddr*)&listening_sockaddr, listening_sockaddr_len);
-
-		// Handle Errors I guess
-		if (err == SOCKET_ERROR) {
-			std::cout << "Can't bind Socket " << WSAGetLastError() << std::endl;
-			return err;
-		}
-	}
-
-
 	std::cout << "Message recv: " << in_buf << std::endl;
 
 	return bytesIn;
@@ -74,7 +61,7 @@ int Client::recv() {
 int Client::send() {
 	//std::cout << "Sending message to server : " << out_buf << std::endl;
 
-	int sendOk = sendto(server_sock, out_buf, MAX_PACK_BYTES, 0, (sockaddr*)&server_sockaddr, server_sockaddr_len);
+	int sendOk = sendto(listening_sock, out_buf, MAX_PACK_BYTES, 0, (sockaddr*)&listening_sockaddr, listening_sockaddr_len);
 
 	if (sendOk == SOCKET_ERROR) {
 		std::cout << "Error sending message : " << WSAGetLastError() << std::endl;

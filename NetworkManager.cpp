@@ -6,9 +6,6 @@
 NetworkManager::NetworkManager(const int port = 25565) : port(port) {
 
 	winsock_init();
-	if (port > 0) {
-		bind_listener();
-	}
 }
 
 NetworkManager::~NetworkManager() {

@@ -188,6 +188,7 @@ int main() {
 	Client c(port);
 
 	c.connect(ip.c_str());
+	c.bind_listener();
 	
 	std::thread th_snd(send_func, &c);
 	std::thread th_rcv(recv_func, &c);

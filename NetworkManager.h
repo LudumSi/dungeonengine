@@ -29,13 +29,13 @@ protected:
 	int listening_sockaddr_len;
 	sockaddr_in listening_sockaddr;
 
-	int bind_listener();
 	int winsock_init();
 	//virtual void pk_to_bytes();
 	//virtual void bytes_to_pk();
 
 public:
 
+	int bind_listener();
 	NetworkManager(const int);
 	~NetworkManager();
 
