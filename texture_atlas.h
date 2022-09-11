@@ -22,9 +22,6 @@ class TextureAtlas {
 		int next_x;
 		int next_y;
 
-		//Size in pixels of each square "chunk" of the atlas
-		int resolution;
-
 		//Total size in chunks of the atlas
 		int side_len;
 
@@ -38,6 +35,9 @@ class TextureAtlas {
 
 		//Texture buffer
 		Texture* texture;
+
+		//Size in pixels of each square "chunk" of the atlas
+		int resolution;
 		
 		//Function to add an image file to the atlas
 		void add_image(const char* path, const char* name);

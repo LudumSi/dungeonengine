@@ -129,9 +129,6 @@ class System {
 
 		//Update function
 		virtual void update() = 0;
-
-		//Initialize function
-		virtual void init() = 0;
 };
 
 class EntityHandle;
@@ -234,7 +231,7 @@ class World {
 		
 		//Add a system
 		void add_system(System* sys) {
-			system_indices[sys] = systems.size();
+			system_indices[sys] = (int)systems.size();
 			systems.push_back(sys);
 		}
 

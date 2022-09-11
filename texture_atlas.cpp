@@ -82,7 +82,9 @@ void TextureAtlas::add_image(const char* path, const char* name) {
 	texture->copy_image(&image, next_x * resolution, next_y * resolution);
 
 	//Save the texture coords in the dictionary along with the texture name
-	atlas[std::string(name)] = glm::vec2(next_x * resolution, next_y * resolution);
+	float tex_x = (float) next_x / (float) side_len;
+	float tex_y = (float) next_y / (float) side_len;
+	atlas[std::string(name)] = glm::vec2(tex_x, tex_y);
 
 	//Update the next available coords
 	next_x++;
