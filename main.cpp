@@ -7,9 +7,10 @@
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include "texture_atlas.h"
-#include "ecstest.h"
 #include "sprite.h"
 #include "render.h"
 
@@ -89,14 +90,35 @@ int main() {
 	//Set up resize callback
 	glfwSetWindowSizeCallback(window, window_resize_callback);
 
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+
+	stbi_set_flip_vertically_on_load(true);
+	TextureAtlas atlas = TextureAtlas(256, 3, "assets/debug/daddy.png");
+	atlas.add_image("assets/debug/gradient.png");
+	atlas.add_image("assets/entities/wiz.png");
+
 	World world;
 	EntityManager emanager;
 	ComponentManager<Sprite> spritemanager;
-	RenderSystem renderer = RenderSystem(window);
+	ComponentManager<Transform> tmanager;
+	RenderSystem renderer = RenderSystem(window, &atlas, &spritemanager, &tmanager);
+
+	world.add_manager<Sprite>(&spritemanager);
+	world.add_manager<Transform>(&tmanager);
+	world.subscribe_system<Sprite>(&renderer);
+	world.subscribe_system<Transform>(&renderer);
+
+	Sprite test_sprite = Sprite(&atlas, "assets/entities/wiz.png");
+
+	EntityHandle test = world.create_entity();
+	test.add<Sprite>(&test_sprite);
+	test.add<Transform>(new Transform(100.f,100.f));
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		renderer.render();
 		
 		glfwSwapBuffers(window);

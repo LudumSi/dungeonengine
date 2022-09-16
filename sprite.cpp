@@ -1,11 +1,6 @@
 
 #include "sprite.h"
 #include "glad\glad.h"
-#include "glm/gtc/type_ptr.hpp"
-
-Sprite::Sprite() {
-
-}
 
 Sprite::Sprite(TextureAtlas* atlas, const char* texture) {
 
@@ -13,9 +8,15 @@ Sprite::Sprite(TextureAtlas* atlas, const char* texture) {
 
 	this->tex_coords = atlas->get_coords(texture);
 
-	this->transform = glm::mat4(1.0);
-
 	//Generate a VAO for the sprite
+	generate_VAO();
+}
+
+Sprite::Sprite(const Sprite& old_sprite) {
+
+	this->atlas = old_sprite.atlas;
+	this->tex_coords = glm::vec2(0,0);
+	
 	generate_VAO();
 }
 
@@ -63,31 +64,4 @@ void Sprite::generate_VAO() {
 	//Textures
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-}
-
-void Sprite::draw(unsigned int shaderProgram) {
-
-	//Set transform matrix
-	int transform_loc = glGetUniformLocation(shaderProgram, "transform");
-	glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(this->transform));
-
-	//Bind the vertex array and draw the sprite
-	glBindVertexArray(this->VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	return;
-}
-
-void Sprite::translate(float x, float y) {
-
-	this->transform = glm::translate(this->transform,glm::vec3(x,y,0.f));
-
-}
-
-void Sprite::rotate_about_deg(float theta, float x, float y) {
-
-	this->transform = glm::translate(this->transform, glm::vec3(x,y,0.f));
-	float rads = 3.141592 / 180.f * theta;
-	this->transform = glm::rotate(this->transform,rads,glm::vec3(0,0,1));
-	this->transform = glm::translate(this->transform, glm::vec3(-1.f*x, -1.f*y, 0.f));
 }

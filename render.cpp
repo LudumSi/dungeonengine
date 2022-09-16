@@ -6,7 +6,6 @@
 #include "glad\glad.h"
 #include "glm\gtc\matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 //Function to get shader file data
@@ -111,9 +110,6 @@ unsigned int setup_texture(TextureAtlas* atlas) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	atlas->add_image("assets/debug/gradient.png");
-	atlas->add_image("assets/entities/wiz.png");
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas->scanline_size, atlas->scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas->texture->buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -121,7 +117,7 @@ unsigned int setup_texture(TextureAtlas* atlas) {
 	return texture;
 }
 
-RenderSystem::RenderSystem(GLFWwindow* window) {
+RenderSystem::RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentManager<Sprite>* sprites, ComponentManager<Transform>* positions) {
 
 	//Set up height and width
 	this->window = window;
@@ -131,16 +127,13 @@ RenderSystem::RenderSystem(GLFWwindow* window) {
 	this->shader = get_shaders();
 
 	//Set up textures
-	stbi_set_flip_vertically_on_load(true);
-	TextureAtlas atlas = TextureAtlas(256, 3, "assets/debug/daddy.png");
-	this->texture = setup_texture(&atlas);
-
-	this->test_sprite = Sprite(&atlas, "assets/entities/wiz.png");
+	this->texture = setup_texture(atlas);
 
 	//View matrix
 	this->projection = glm::ortho(0.0f, (float)win_width, (float)win_height, 0.0f, -1.0f, 1.0f);
 
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	this->sprites = sprites;
+	this->positions = positions;
 }
 
 void RenderSystem::update() {
@@ -148,7 +141,6 @@ void RenderSystem::update() {
 }
 
 void RenderSystem::render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -158,5 +150,23 @@ void RenderSystem::render() {
 	int project_loc = glGetUniformLocation(shader, "projection");
 	glUniformMatrix4fv(project_loc, 1, GL_FALSE, glm::value_ptr(projection));
 	
-	test_sprite.draw(shader);
+	//Draw all sprites in the sprites
+	for (std::vector<Entity>::iterator it = entities.begin(); it != entities.end(); ++it) {
+
+		Sprite* sprite = sprites->get_component(*it);
+		Transform* position = positions->get_component(*it);
+
+		if(sprite && position){
+
+			//Set transform matrix
+			int transform_loc = glGetUniformLocation(shader, "transform");
+			glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(position->transform));
+
+			//Bind the vertex array and draw the sprite
+			glBindVertexArray(sprite->VAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		}
+	}
+
 }
