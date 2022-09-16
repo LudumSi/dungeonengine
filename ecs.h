@@ -126,7 +126,9 @@ class System {
 		void deregister_entity(Entity);
 
 		//Update function
-		virtual void update() = 0;
+		virtual void update(float delta) = 0;
+		//Render function
+		virtual void render() = 0;
 };
 
 class EntityHandle;

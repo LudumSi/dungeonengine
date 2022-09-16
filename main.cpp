@@ -13,6 +13,7 @@
 #include "texture_atlas.h"
 #include "sprite.h"
 #include "render.h"
+#include "physics.h"
 
 #include "Client.h"
 #include <mutex>
@@ -101,24 +102,46 @@ int main() {
 	EntityManager emanager;
 	ComponentManager<Sprite> spritemanager;
 	ComponentManager<Transform> tmanager;
+	ComponentManager<PhysicsComp> physmanager;
 	RenderSystem renderer = RenderSystem(window, &atlas, &spritemanager, &tmanager);
+	PhysicsSystem physics = PhysicsSystem(&tmanager, &physmanager);
 
 	world.add_manager<Sprite>(&spritemanager);
 	world.add_manager<Transform>(&tmanager);
+	world.add_manager<PhysicsComp>(&physmanager);
 	world.subscribe_system<Sprite>(&renderer);
 	world.subscribe_system<Transform>(&renderer);
-
-	Sprite test_sprite = Sprite(&atlas, "assets/entities/wiz.png");
+	world.subscribe_system<Transform>(&physics);
+	world.subscribe_system<PhysicsComp>(&physics);
 
 	EntityHandle test = world.create_entity();
-	test.add<Sprite>(&test_sprite);
+	test.add<Sprite>(new Sprite(&atlas, "assets/entities/wiz.png"));
 	test.add<Transform>(new Transform(100.f,100.f));
+
+	EntityHandle ptest = world.create_entity();
+	ptest.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest.add<Transform>(new Transform(0.f, 0.f));
+	ptest.add<PhysicsComp>(new PhysicsComp{ glm::vec2(0.f,0.f),glm::vec2(0.01f,0.0f) });
+
+	EntityHandle ptest1 = world.create_entity();
+	ptest1.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest1.add<Transform>(new Transform(0.f, 0.f));
+	ptest1.add<PhysicsComp>(new PhysicsComp{ glm::vec2(0.f,0.f),glm::vec2(0.01f,0.01f) });
+
+	EntityHandle ptest2 = world.create_entity();
+	ptest2.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest2.add<Transform>(new Transform(0.f, 0.f));
+	ptest2.add<PhysicsComp>(new PhysicsComp{ glm::vec2(0.f,0.f),glm::vec2(0.0f,0.01f) });
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//Update
+		physics.update(1.f);
+
+		//Render
 		renderer.render();
 		
 		glfwSwapBuffers(window);

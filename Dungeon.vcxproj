@@ -147,6 +147,7 @@
     <ClCompile Include="ecs.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="physics.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sprite.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ecs.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="sprite.h" />

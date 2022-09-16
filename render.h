@@ -25,7 +25,7 @@ class RenderSystem : public System {
 	public:
 		RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentManager<Sprite>* spriteman, ComponentManager<Transform>* positions);
 
-		void update();
+		void update(float delta);
 		void render();
 };
 

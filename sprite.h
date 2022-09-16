@@ -1,5 +1,5 @@
-#ifndef SPRITE
-#define SPRITE
+#ifndef DUNGEON_SPRITE
+#define DUNGEON_SPRITE
 
 #include "texture_atlas.h"
 

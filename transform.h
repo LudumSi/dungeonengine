@@ -26,4 +26,9 @@ class Transform {
 		void rotate(float angle);
 };
 
+struct PhysicsComp {
+	glm::vec2 velocity;
+	glm::vec2 acceleration;
+};
+
 #endif

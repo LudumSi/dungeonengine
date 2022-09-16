@@ -136,8 +136,8 @@ RenderSystem::RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentMan
 	this->positions = positions;
 }
 
-void RenderSystem::update() {
-	render();
+void RenderSystem::update(float delta_t) {
+	return;
 }
 
 void RenderSystem::render() {
