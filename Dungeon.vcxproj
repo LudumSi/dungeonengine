@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="control.cpp" />
     <ClCompile Include="ecs.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
@@ -158,8 +159,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="control.h" />
     <ClInclude Include="ecs.h" />
     <ClInclude Include="physics.h" />
+    <ClInclude Include="playercontrol.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="sprite.h" />

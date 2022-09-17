@@ -13,8 +13,8 @@ Transform::Transform(float x, float y) {
 
 }
 
-void Transform::translate(glm::vec2 transform) {
+void Transform::translate(glm::vec2 translate) {
 
-	this->transform = glm::translate(this->transform, glm::vec3(transform.x,transform.y,0.f));
+	this->transform = glm::translate(this->transform, glm::vec3(translate.x,translate.y,0.f));
 }
 

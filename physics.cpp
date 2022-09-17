@@ -25,7 +25,7 @@ void PhysicsSystem::update(float delta_t) {
 			delta->velocity += delta_t * delta->acceleration;
 
 			//Update position
-			position->translate(delta->velocity);
+			position->translate(delta->velocity * delta_t);
 		}
 	}
 
