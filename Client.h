@@ -1,17 +1,20 @@
 #pragma once
 #include "NetworkManager.h"
-class Client : public NetworkManager {
+class Client {
 private:
 
 	char* ip;
 	
-	packet* pack;
-
-	
-public:
+	sockaddr_in listening_sockaddr;
+	int listening_sockaddr_len;
 	
 	char in_buf[MAX_PACK_BYTES];
 	char out_buf[MAX_PACK_BYTES];
+	
+public:
+	
+
+	packet* pack;
 
 	Client(int);
 	~Client();

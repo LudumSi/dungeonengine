@@ -1,6 +1,8 @@
 #include "Client.h"
 
-Client::Client(int port) : NetworkManager(port) {
+Client::Client(int port) {
+	winsock_init();
+
 	std::cout << "Starting Client on port " << port << std::endl;
 
 	ZeroMemory(in_buf, MAX_PACK_BYTES);
@@ -26,8 +28,6 @@ int Client::connect(const char* ip) {
 	inet_pton(AF_INET, ip, &listening_sockaddr.sin_addr);
 	listening_sockaddr_len = sizeof(listening_sockaddr);
 
-	// Create Socket
-	listening_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
 	return 0;
 }

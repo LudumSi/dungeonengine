@@ -8,6 +8,7 @@
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define MAX_PACK_BYTES 1024
+#define MAX_CLIENTS 8
 
 struct packet {
 	uint16_t cmd_id;
@@ -15,28 +16,13 @@ struct packet {
 	byte* args;
 };
 
+// Add more command ids here in the future
 enum commands {
-	PLAINTEXT,
-
+	CONNECT,
+	DISCONNECT,
+	MESSAGE
 };
 
-class NetworkManager {
-protected:
-	
-	// Port for sending/receiving information
-	const int port;
-	SOCKET listening_sock;
-	int listening_sockaddr_len;
-	sockaddr_in listening_sockaddr;
-
-	int winsock_init();
-	//virtual void pk_to_bytes();
-	//virtual void bytes_to_pk();
-
-public:
-
-	int bind_listener();
-	NetworkManager(const int);
-	~NetworkManager();
-
-};
+int winsock_init();
+int bind_listener(sockaddr_in*, SOCKET*, int, const char*);
+packet* bytes_to_packet(int*, int);
