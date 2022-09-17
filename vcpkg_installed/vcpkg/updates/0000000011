@@ -1,0 +1,9 @@
+Package: gamenetworkingsockets
+Version: 1.4.1
+Depends: openssl, protobuf, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 638af6f0559a9bd8f047254c5731823036bda94e32752827ec87f36e1d0419b5
+Description: GameNetworkingSockets is a basic transport layer for games.
+Type: Port
+Status: install ok installed
