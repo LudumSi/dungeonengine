@@ -1,5 +1,6 @@
 #include "Server.h"
 
+/*
 Server::Server(int port) : port(port) {
 
 }
@@ -15,3 +16,4 @@ int Server::open() {
 int Server::close() {
 
 }
+*/

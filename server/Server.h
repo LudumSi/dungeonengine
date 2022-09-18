@@ -1,6 +1,7 @@
 #pragma once
-#include "NetworkManager.h"
+#include "../common/network/NetworkManager.h"
 
+/*
 #include <mutex>
 #include <thread>
 #include <ctime>
@@ -41,3 +42,4 @@ public:
 	int send();
 	int recv(bool);
 };
+*/

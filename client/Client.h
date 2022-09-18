@@ -1,5 +1,6 @@
 #pragma once
-#include "NetworkManager.h"
+#include "../common/network/NetworkManager.h"
+/*
 class Client {
 private:
 
@@ -24,3 +25,4 @@ public:
 	int send();
 	int recv();
 };
+*/

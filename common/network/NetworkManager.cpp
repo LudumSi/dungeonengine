@@ -49,5 +49,5 @@ int bind_listener(sockaddr_in * listening_sockaddr, SOCKET* listening_sock, int 
 }
 
 packet* bytes_to_packet(int* bytes, int n_bytes) {
-	
+	return nullptr;
 }

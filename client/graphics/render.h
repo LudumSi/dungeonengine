@@ -3,11 +3,11 @@
 #ifndef RENDER_SYS
 #define RENDER_SYS
 
-#include "ecs.h"
+#include "../common/ecs.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW\glfw3.h"
 #include "sprite.h"
-#include "transform.h"
+#include "../common/transform.h"
 
 class RenderSystem : public System {
 

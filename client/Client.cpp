@@ -1,5 +1,6 @@
 #include "Client.h"
 
+/*
 Client::Client(int port) {
 	winsock_init();
 
@@ -72,3 +73,4 @@ int Client::send() {
 		return 0;
 	}
 }
+*/

@@ -143,33 +143,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="client\Client.cpp" />
+    <ClCompile Include="client\graphics\render.cpp" />
+    <ClCompile Include="client\graphics\sprite.cpp" />
+    <ClCompile Include="client\graphics\texture.cpp" />
+    <ClCompile Include="client\graphics\texture_atlas.cpp" />
+    <ClCompile Include="common\ecs.cpp" />
+    <ClCompile Include="common\glad.c" />
+    <ClCompile Include="common\network\NetworkManager.cpp" />
+    <ClCompile Include="common\physics.cpp" />
+    <ClCompile Include="common\transform.cpp" />
     <ClCompile Include="control.cpp" />
-    <ClCompile Include="ecs.cpp" />
-    <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="physics.cpp" />
-    <ClCompile Include="render.cpp" />
-    <ClCompile Include="Server.cpp" />
-    <ClCompile Include="sprite.cpp" />
-    <ClCompile Include="texture.cpp" />
-    <ClCompile Include="texture_atlas.cpp" />
-    <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="transform.cpp" />
+    <ClCompile Include="server\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h" />
+    <ClInclude Include="client\Client.h" />
+    <ClInclude Include="client\graphics\render.h" />
+    <ClInclude Include="client\graphics\sprite.h" />
+    <ClInclude Include="client\graphics\texture.h" />
+    <ClInclude Include="client\graphics\texture_atlas.h" />
+    <ClInclude Include="common\ecs.h" />
+    <ClInclude Include="common\network\NetworkManager.h" />
+    <ClInclude Include="common\physics.h" />
+    <ClInclude Include="common\transform.h" />
     <ClInclude Include="control.h" />
-    <ClInclude Include="ecs.h" />
-    <ClInclude Include="physics.h" />
     <ClInclude Include="playercontrol.h" />
-    <ClInclude Include="render.h" />
-    <ClInclude Include="Server.h" />
-    <ClInclude Include="sprite.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="texture_atlas.h" />
-    <ClInclude Include="NetworkManager.h" />
-    <ClInclude Include="transform.h" />
+    <ClInclude Include="server\Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
