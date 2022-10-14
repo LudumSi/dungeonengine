@@ -13,6 +13,9 @@ class ControlSystem : public System {
 		ComponentManager<PlayerControl>* players;
 		std::queue<MoveCommand>* actions;
 
+		int left;
+		int up;
+
 	public:
 
 		ControlSystem(std::queue<MoveCommand>* actions, ComponentManager<PhysicsComp>* deltas, ComponentManager<PlayerControl>* players);

@@ -5,6 +5,8 @@ ControlSystem::ControlSystem(std::queue<MoveCommand>* actions, ComponentManager<
 	this->actions = actions;
 	this->deltas = deltas;
 	this->players = players;
+	this->up = 0;
+	this->left = 0;
 }
 
 void ControlSystem::render() {
@@ -17,8 +19,9 @@ void ControlSystem::update(float dt) {
 		return;
 	}
 	
-	//Calculate movement vector
-	glm::vec2 movement = glm::vec2(0.f,0.f);
+	//Calculate movement changes
+	int new_up = up;
+	int new_left = left; //fuckin hippies
 	
 	while (!actions->empty()) {
 		MoveCommand action = actions->front();
@@ -28,30 +31,34 @@ void ControlSystem::update(float dt) {
 
 		case DownStart:
 		case UpStop:
-			movement += glm::vec2(0.f, 1.f);
+			new_up += 1;
 			break;
 
 		case DownStop:
 		case UpStart:
-			movement += glm::vec2(0.f, -1.f);
+			new_up -= 1;
 			break;
 
 		case LeftStart:
 		case RightStop:
-			movement += glm::vec2(-1.f, 0.f);
+			new_left -= 1;
 			break;
 
 		case RightStart:
 		case LeftStop:
-			movement += glm::vec2(1.f, 0.f);
+			new_left += 1;
 			break;
 
 		}
 	}
 
-	if (movement.x || movement.y) {
-		movement = glm::normalize(movement);
+	if (new_left == left && new_up == up) {
+		return;
 	}
+
+	//if (movement.x || movement.y) {
+		//movement = glm::normalize(movement);
+	//}
 
 	for (std::vector<Entity>::iterator it = entities.begin(); it != entities.end(); ++it) {
 
@@ -60,8 +67,24 @@ void ControlSystem::update(float dt) {
 
 		if (delta && player) {
 
+			//Remove previous velocity
+			glm::vec2 old_movement = glm::vec2(left * 1.f, up * 1.f);
+
 			//Update velocity
-			delta->velocity = movement * player->speed;
+			if (old_movement.x || old_movement.y) {
+				delta->velocity -= glm::normalize(old_movement) * player->speed;
+			}
+
+			//Add new velocity
+			glm::vec2 new_movement = glm::vec2(new_left * 1.f, new_up * 1.f);
+
+			//Add new velocity
+			if (new_movement.x || new_movement.y) {
+				delta->velocity += glm::normalize(new_movement) * player->speed;
+			}
+
+			left = new_left;
+			up = new_up;
 		}
 	}
 
