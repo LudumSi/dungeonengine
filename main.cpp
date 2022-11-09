@@ -14,8 +14,8 @@
 #include "client/graphics/sprite.h"
 #include "client/graphics/render.h"
 #include "common/physics.h"
-#include "playercontrol.h"
-#include "control.h"
+#include "client/playercontrol.h"
+#include "client/control.h"
 
 #include "client/Client.h"
 #include <mutex>
@@ -23,7 +23,7 @@
 
 #include <queue>
 
-//TODO: Cross compatabilitys
+//TODO: Cross compatability
 #include <windows.h>
 
 int win_width = 640;

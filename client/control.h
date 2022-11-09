@@ -1,9 +1,9 @@
 #ifndef DUNGEON_CONTROL_SYS
 #define DUNGEON_CONTROL_SYS
 
-#include "common/ecs.h"
+#include "../common/ecs.h"
 #include "playercontrol.h"
-#include "common/transform.h"
+#include "../common/transform.h"
 #include <queue>
 
 class ControlSystem : public System {
