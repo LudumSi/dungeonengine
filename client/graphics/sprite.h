@@ -1,5 +1,4 @@
-#ifndef DUNGEON_SPRITE
-#define DUNGEON_SPRITE
+#pragma once
 
 #include "texture_atlas.h"
 
@@ -23,5 +22,3 @@ class Sprite {
 
 		void set_texture(const char* texture);
 };
-
-#endif

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef PHYSICS_SYS
-#define PHYSICS_SYS
 
 #include "ecs.h"
 #include "transform.h"
@@ -18,5 +16,3 @@ class PhysicsSystem : public System {
 		void update(float delta);
 		void render();
 };
-
-#endif

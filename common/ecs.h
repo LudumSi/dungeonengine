@@ -1,5 +1,4 @@
-#ifndef ECS_H
-#define ECS_H
+#pragma once
 
 #include <vector>
 #include <map>
@@ -297,5 +296,3 @@ public:
 		return world->get_component<CompType>(entity);
 	}
 };
-
-#endif

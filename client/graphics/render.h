@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef RENDER_SYS
-#define RENDER_SYS
-
 #include "../common/ecs.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW\glfw3.h"
@@ -28,6 +25,3 @@ class RenderSystem : public System {
 		void update(float delta);
 		void render();
 };
-
-
-#endif

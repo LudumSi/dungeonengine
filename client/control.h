@@ -1,5 +1,4 @@
-#ifndef DUNGEON_CONTROL_SYS
-#define DUNGEON_CONTROL_SYS
+#pragma once
 
 #include "../common/ecs.h"
 #include "playercontrol.h"
@@ -22,5 +21,3 @@ class ControlSystem : public System {
 		void update(float delta);
 		void render();
 };
-
-#endif

@@ -1,6 +1,4 @@
-
-#ifndef TEXTURE_ATLAS
-#define TEXTURE_ATLAS
+#pragma once
 
 #include <map>
 #include <string>
@@ -48,5 +46,3 @@ class TextureAtlas {
 		//Eventually should spit out a missing texture if not recognizes
 		glm::vec2 get_coords(const char* name);
 };
-
-#endif

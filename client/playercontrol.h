@@ -1,5 +1,4 @@
-#ifndef DUNGEON_PLAYER
-#define DUNGEON_PLAYER
+#pragma once
 
 enum MoveCommand {
 	UpStart,
@@ -15,5 +14,3 @@ enum MoveCommand {
 struct PlayerControl {
 		float speed;
 };
-
-#endif

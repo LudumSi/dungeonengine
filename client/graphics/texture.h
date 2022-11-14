@@ -1,5 +1,4 @@
-#ifndef DUNGEON_TEXTURE_H
-#define DUNGEON_TEXTURE_H
+#pragma once
 
 #include <stdint.h>
 
@@ -35,5 +34,3 @@ class Texture {
 		//Debug function to print out a texture as hexadecimal
 		void print();
 };
-
-#endif

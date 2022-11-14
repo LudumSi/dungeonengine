@@ -1,5 +1,4 @@
-#ifndef DUNGEON_TRANSFORM
-#define DUNGEON_TRANSFORM
+#pragma once
 
 #include "glm/glm.hpp"
 
@@ -30,5 +29,3 @@ struct PhysicsComp {
 	glm::vec2 velocity;
 	glm::vec2 acceleration;
 };
-
-#endif
