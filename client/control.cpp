@@ -72,7 +72,7 @@ void ControlSystem::update(float dt) {
 
 			//Update velocity
 			if (old_movement.x || old_movement.y) {
-				delta->velocity -= glm::normalize(old_movement) * player->speed;
+				delta->acceleration -= glm::normalize(old_movement) * player->speed;
 			}
 
 			//Add new velocity
@@ -80,7 +80,7 @@ void ControlSystem::update(float dt) {
 
 			//Add new velocity
 			if (new_movement.x || new_movement.y) {
-				delta->velocity += glm::normalize(new_movement) * player->speed;
+				delta->acceleration += glm::normalize(new_movement) * player->speed;
 			}
 
 			left = new_left;
