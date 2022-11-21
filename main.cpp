@@ -54,37 +54,37 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 		case GLFW_KEY_W:
 			if (action == GLFW_PRESS) {
-				actionqueue.push(UpStart);
+				actionqueue.push(MoveCommand::UpStart);
 			}
 			else if (action == GLFW_RELEASE) {
-				actionqueue.push(UpStop);
+				actionqueue.push(MoveCommand::UpStop);
 			}
 			break;
 
 		case GLFW_KEY_A:
 			if (action == GLFW_PRESS) {
-				actionqueue.push(LeftStart);
+				actionqueue.push(MoveCommand::LeftStart);
 			}
 			else if (action == GLFW_RELEASE) {
-				actionqueue.push(LeftStop);
+				actionqueue.push(MoveCommand::LeftStop);
 			}
 			break;
 
 		case GLFW_KEY_S:
 			if (action == GLFW_PRESS) {
-				actionqueue.push(DownStart);
+				actionqueue.push(MoveCommand::DownStart);
 			}
 			else if (action == GLFW_RELEASE) {
-				actionqueue.push(DownStop);
+				actionqueue.push(MoveCommand::DownStop);
 			}
 			break;
 
 		case GLFW_KEY_D:
 			if (action == GLFW_PRESS) {
-				actionqueue.push(RightStart);
+				actionqueue.push(MoveCommand::RightStart);
 			}
 			else if (action == GLFW_RELEASE) {
-				actionqueue.push(RightStop);
+				actionqueue.push(MoveCommand::RightStop);
 			}
 			break;
 
@@ -194,7 +194,7 @@ int main() {
 	test.add<Sprite>(new Sprite(&atlas, "assets/entities/wiz.png"));
 	test.add<Transform>(new Transform(100.f,100.f));
 	test.add<PhysicsComp>(new PhysicsComp{ 0.75, 50.f, glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
-	test.add<PlayerControl>(new PlayerControl{ 10.f });
+	test.add<PlayerControl>(new PlayerControl{ 9.f, 10.f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();
 	ptest.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
@@ -209,7 +209,7 @@ int main() {
 	EntityHandle ptest2 = world.create_entity();
 	ptest2.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
 	ptest2.add<Transform>(new Transform(0.f, 0.f));
-	ptest2.add<PhysicsComp>(new PhysicsComp{ 0.5f, 1.f, glm::vec2(0.f,3.f),glm::vec2(0.0f,0.0f) });
+	ptest2.add<PhysicsComp>(new PhysicsComp{ 0.5f, 1.f, glm::vec2(0.f,5.f),glm::vec2(0.0f,0.0f) });
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;

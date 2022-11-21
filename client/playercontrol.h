@@ -1,6 +1,8 @@
 #pragma once
 
-enum MoveCommand {
+#include "glm/glm.hpp"
+
+enum class MoveCommand {
 	UpStart,
 	UpStop,
 	LeftStart,
@@ -12,5 +14,7 @@ enum MoveCommand {
 };
 
 struct PlayerControl {
-		float speed;
+		float max_speed;
+		float max_acceleration;
+		glm::vec2 prev_movement;
 };

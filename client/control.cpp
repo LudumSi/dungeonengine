@@ -27,65 +27,70 @@ void ControlSystem::update(float dt) {
 		MoveCommand action = actions->front();
 		actions->pop();
 
+		//printf("Control Action: %i\n", (int)action);
+
 		switch (action) {
 
-		case DownStart:
-		case UpStop:
+		case MoveCommand::DownStart:
+		case MoveCommand::UpStop:
 			new_up += 1;
 			break;
 
-		case DownStop:
-		case UpStart:
+		case MoveCommand::DownStop:
+		case MoveCommand::UpStart:
 			new_up -= 1;
 			break;
 
-		case LeftStart:
-		case RightStop:
+		case MoveCommand::LeftStart:
+		case MoveCommand::RightStop:
 			new_left -= 1;
 			break;
 
-		case RightStart:
-		case LeftStop:
+		case MoveCommand::RightStart:
+		case MoveCommand::LeftStop:
 			new_left += 1;
 			break;
 
 		}
 	}
 
-	if (new_left == left && new_up == up) {
-		return;
-	}
-
-	//if (movement.x || movement.y) {
-		//movement = glm::normalize(movement);
-	//}
-
 	for (std::vector<Entity>::iterator it = entities.begin(); it != entities.end(); ++it) {
 
-		PhysicsComp* delta = deltas->get_component(*it);
+		PhysicsComp* physics = deltas->get_component(*it);
 		PlayerControl* player = players->get_component(*it);
 
-		if (delta && player) {
+		if (physics && player) {
 
-			//Remove previous velocity
-			glm::vec2 old_movement = glm::vec2(left * 1.f, up * 1.f);
+			//Remove previous acceleration
+			//printf("Prev accel: %f %f\n", physics->acceleration.x, physics->acceleration.y);
+			physics->acceleration -= player->prev_movement;
 
-			//Update velocity
-			if (old_movement.x || old_movement.y) {
-				delta->acceleration -= glm::normalize(old_movement) * player->speed;
+			//Calculate new acceleration
+			
+			//Direction
+			glm::vec2 new_accel = glm::vec2(new_left,new_up);
+
+			if(glm::length(new_accel) > 0.f){
+				
+				//Magnitude
+				new_accel = glm::normalize(new_accel);
+
+				float current_speed = glm::length(physics->velocity);
+				float multiplier = fmin(player->max_acceleration,fmax(player->max_speed-current_speed,0.f));
+
+				//printf("Current speed: %f Multiplier: %f\n", current_speed, multiplier);
+
+				new_accel *= multiplier;
+				//printf("New accel: %f %f\n", new_accel.x, new_accel.y);
 			}
 
-			//Add new velocity
-			glm::vec2 new_movement = glm::vec2(new_left * 1.f, new_up * 1.f);
-
-			//Add new velocity
-			if (new_movement.x || new_movement.y) {
-				delta->acceleration += glm::normalize(new_movement) * player->speed;
-			}
-
-			left = new_left;
-			up = new_up;
+			//Apply new acceleration
+			physics->acceleration += new_accel;
+			player->prev_movement = new_accel;
 		}
 	}
+
+	left = new_left;
+	up = new_up;
 
 }
