@@ -20,6 +20,6 @@ target_include_directories(client PRIVATE include)
 target_include_directories(client PRIVATE common)
 target_include_directories(client PRIVATE client)
 
-target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw3.lib")
+target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 
 install(TARGETS client DESTINATION "./")

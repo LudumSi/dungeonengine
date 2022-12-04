@@ -1,0 +1,7 @@
+{
+    "files.associations": {},
+    "cmake.generator": "MSYS Makefiles",
+    "cmake.configureSettings": {
+        "CMAKE_MAKE_PROGRAM": "C:/msys64/usr/bin/make.exe"
+    }
+}
