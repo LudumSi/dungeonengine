@@ -18,11 +18,7 @@ void ControlSystem::update(float dt) {
 	if (!entities.size()) {
 		return;
 	}
-	
-	//Calculate movement changes
-	int new_up = up;
-	int new_left = left; //fuckin hippies
-	
+
 	while (!actions->empty()) {
 		MoveCommand action = actions->front();
 		actions->pop();
@@ -33,22 +29,22 @@ void ControlSystem::update(float dt) {
 
 		case MoveCommand::DownStart:
 		case MoveCommand::UpStop:
-			new_up += 1;
+			up += 1;
 			break;
 
 		case MoveCommand::DownStop:
 		case MoveCommand::UpStart:
-			new_up -= 1;
+			up -= 1;
 			break;
 
 		case MoveCommand::LeftStart:
 		case MoveCommand::RightStop:
-			new_left -= 1;
+			left -= 1;
 			break;
 
 		case MoveCommand::RightStart:
 		case MoveCommand::LeftStop:
-			new_left += 1;
+			left += 1;
 			break;
 
 		}
@@ -61,36 +57,32 @@ void ControlSystem::update(float dt) {
 
 		if (physics && player) {
 
-			//Remove previous acceleration
+			//Remove previous velocity
 			//printf("Prev accel: %f %f\n", physics->acceleration.x, physics->acceleration.y);
-			physics->acceleration -= player->prev_movement;
+			physics->velocity -= player->prev_movement;
 
-			//Calculate new acceleration
+			//Calculate target_velocity
 			
 			//Direction
-			glm::vec2 new_accel = glm::vec2(new_left,new_up);
+			glm::vec2 target_velocity = glm::vec2(left,up);
 
-			if(glm::length(new_accel) > 0.f){
-				
+			if(glm::length(target_velocity) > 0.f){
 				//Magnitude
-				new_accel = glm::normalize(new_accel);
-
-				float current_speed = glm::length(physics->velocity);
-				float multiplier = fmin(player->max_acceleration,fmax(player->max_speed-current_speed,0.f));
-
-				//printf("Current speed: %f Multiplier: %f\n", current_speed, multiplier);
-
-				new_accel *= multiplier;
-				//printf("New accel: %f %f\n", new_accel.x, new_accel.y);
+				target_velocity = glm::normalize(target_velocity);
 			}
 
-			//Apply new acceleration
-			physics->acceleration += new_accel;
-			player->prev_movement = new_accel;
+			//Cap change to the target by max acceleration
+			glm::vec2 delta_v = target_velocity - player->prev_movement;
+			if(glm::length(delta_v) > player->max_acceleration){
+				delta_v = glm::normalize(delta_v);
+				delta_v *= player->max_acceleration;
+			}
+
+			glm::vec2 new_velocity = player->prev_movement + delta_v;
+
+			//Apply new velocity
+			physics->velocity += new_velocity;
+			player->prev_movement = new_velocity;
 		}
 	}
-
-	left = new_left;
-	up = new_up;
-
 }

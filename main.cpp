@@ -194,23 +194,23 @@ int main() {
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(new Sprite(&atlas, "assets/entities/wiz.png"));
 	test.add<Transform>(new Transform(100.f,100.f));
-	test.add<PhysicsComp>(new PhysicsComp{ 0.75, 50.f, glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
-	test.add<PlayerControl>(new PlayerControl{ 9.f, 10.f, glm::vec2(0.f,0.f) });
+	test.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
+	test.add<PlayerControl>(new PlayerControl{ 20.f, 0.02f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();
 	ptest.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
 	ptest.add<Transform>(new Transform(0.f, 0.f));
-	ptest.add<PhysicsComp>(new PhysicsComp{ 0.f, 1.f, glm::vec2(0.0f,0.f),glm::vec2(0.1f,0.0f) });
+	ptest.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.1f,0.0f) });
 
 	EntityHandle ptest1 = world.create_entity();
 	ptest1.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
 	ptest1.add<Transform>(new Transform(0.f, 0.f));
-	ptest1.add<PhysicsComp>(new PhysicsComp{ 0.f, 1.f, glm::vec2(0.0f,0.0f),glm::vec2(0.1f,0.1f) });
+	ptest1.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.0f),glm::vec2(0.1f,0.1f) });
 
 	EntityHandle ptest2 = world.create_entity();
 	ptest2.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
 	ptest2.add<Transform>(new Transform(0.f, 0.f));
-	ptest2.add<PhysicsComp>(new PhysicsComp{ 0.5f, 1.f, glm::vec2(0.f,5.f),glm::vec2(0.0f,0.0f) });
+	ptest2.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.f,5.f),glm::vec2(0.0f,0.0f) });
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;
