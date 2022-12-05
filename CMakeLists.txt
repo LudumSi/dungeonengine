@@ -22,6 +22,5 @@ target_include_directories(client PRIVATE client)
 target_include_directories(client PRIVATE extern)
 
 target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
-target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/libGameNetworkingSockets_s.a")
 
 install(TARGETS client DESTINATION "./")
