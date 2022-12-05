@@ -1,5 +1,8 @@
 {
-    "files.associations": {},
+    "files.associations": {
+        "mutex": "cpp",
+        "thread": "cpp"
+    },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {
         "CMAKE_MAKE_PROGRAM": "C:/msys64/usr/bin/make.exe"
