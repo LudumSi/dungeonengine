@@ -26,8 +26,6 @@ class Transform {
 };
 
 struct PhysicsComp {
-	float friction;
-	float mass;
 	glm::vec2 velocity;
 	glm::vec2 acceleration;
 };

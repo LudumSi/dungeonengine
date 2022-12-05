@@ -29,20 +29,6 @@ void PhysicsSystem::update(float delta_t) {
 			//Update velocity
 			physics->velocity += delta_t * physics->acceleration;
 
-			glm::vec2 friction_velocity = glm::vec2(0.f, 0.f);
-			//Calculate friction acceleration
-			if (glm::length(physics->velocity) > 0.f) {
-
-				friction_velocity = -1.f * GRAVITY * physics->friction * delta_t * glm::normalize(physics->velocity);
-			}
-
-			if (glm::length(physics->velocity) - glm::length(friction_velocity) > 0.f) {
-				physics->velocity += friction_velocity;
-			}
-			else {
-				physics->velocity = glm::vec2(0.f, 0.f);
-			}
-
 			//Update position
 			position->translate(physics->velocity * PIXELS_PER_METER * delta_t);
 
