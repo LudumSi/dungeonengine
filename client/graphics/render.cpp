@@ -130,10 +130,18 @@ RenderSystem::RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentMan
 	this->texture = setup_texture(atlas);
 
 	//View matrix
-	this->projection = glm::ortho(0.0f, (float)win_width, (float)win_height, 0.0f, -1.0f, 1.0f);
+	//TODO: Fix things so that the Y-axis works as traditionally expected
+	this->projection = glm::ortho(-1.f * (float)win_width/2, (float)win_width/2, (float)win_height/2, -1.f * (float)win_height/2, -1.0f, 1.0f);
 
 	this->sprites = sprites;
 	this->positions = positions;
+
+	this->focus_entity = NULL;
+	this->camera_position = glm::vec3(0.f,0.f,0.f);
+}
+
+void RenderSystem::set_camera(float x, float y){
+	this->camera_position = glm::vec3(x,y,0.f);
 }
 
 void RenderSystem::update(float delta_t) {
@@ -149,6 +157,19 @@ void RenderSystem::render() {
 	//Set projection matrix uniform
 	int project_loc = glGetUniformLocation(shader, "projection");
 	glUniformMatrix4fv(project_loc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	//Set up camera view matrix
+	glm::mat4 camera_matrix = glm::mat3(1.0);
+
+	if(focus_entity){
+		if(focus_entity->has<Transform>()){
+			camera_position = focus_entity->get<Transform>()->get_position();
+		}
+	}
+
+	camera_matrix = glm::translate(camera_matrix, (-1.f * camera_position));
+	int camera_loc = glGetUniformLocation(shader, "camera_view");
+	glUniformMatrix4fv(camera_loc, 1, GL_FALSE, glm::value_ptr(camera_matrix));
 	
 	//Draw all sprites in the sprites
 	for (std::vector<Entity>::iterator it = entities.begin(); it != entities.end(); ++it) {

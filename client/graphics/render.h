@@ -19,9 +19,17 @@ class RenderSystem : public System {
 		int win_height;
 		int win_width;
 
+		//Position of the camera
+		glm::vec3 camera_position;
+
 	public:
+		//Position of the entity we're following
+		EntityHandle* focus_entity;
+		
 		RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentManager<Sprite>* spriteman, ComponentManager<Transform>* positions);
 
 		void update(float delta);
 		void render();
+
+		void set_camera(float, float);
 };

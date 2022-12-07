@@ -12,7 +12,7 @@ class Transform {
 		//Should be changed out to be a mat3 at some point
 		glm::mat4 transform;
 
-		glm::vec2 get_position();
+		glm::vec3 get_position();
 		void set_position(float x, float y);
 		void translate(glm::vec2 delta);
 

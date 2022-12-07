@@ -22,8 +22,6 @@ class EntityManager {
 		//void delete_entity();
 };
 
-
-
 //Base component class for components to inherit from
 class Component;
 

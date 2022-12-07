@@ -30,10 +30,10 @@ void Sprite::generate_VAO() {
 	//Quad
 	float vertices[] = {
 		// positions        // texture coords
-		0.f, 0.f, 0.f,		tex_coords[0]+half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top left
-		100.f, 0.f, 0.f,    tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top right
-		100.f, 100.f, 0.f,  tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+half_texel_offset,   // bottom right
-		0.f, 100.f, 0.f,    tex_coords[0]+half_texel_offset, tex_coords[1]+half_texel_offset,   // Bottom left
+		-50.f, -50.f, 0.f,		tex_coords[0]+half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top left
+		50.f, -50.f, 0.f,    tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top right
+		50.f, 50.f, 0.f,  tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+half_texel_offset,   // bottom right
+		-50.f, 50.f, 0.f,    tex_coords[0]+half_texel_offset, tex_coords[1]+half_texel_offset,   // Bottom left
 	};
 
 	//Indices for triangles
