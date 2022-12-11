@@ -113,7 +113,7 @@ unsigned int setup_texture(TextureAtlas* atlas) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas->scanline_size, atlas->scanline_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas->texture->buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	//stbi_image_free(data);
+	atlas->flush();
 	return texture;
 }
 
@@ -127,7 +127,11 @@ RenderSystem::RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentMan
 	this->shader = get_shaders();
 
 	//Set up textures
-	this->texture = setup_texture(atlas);
+	if(!atlas->flushed){
+		this->texture = setup_texture(atlas);
+	}else{
+		printf("Failed to create render system; atlas has already been consumed\n");
+	}
 
 	//View matrix
 	//TODO: Fix things so that the Y-axis works as traditionally expected
@@ -149,6 +153,9 @@ void RenderSystem::update(float delta_t) {
 }
 
 void RenderSystem::render() {
+
+	//Clear previous frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);

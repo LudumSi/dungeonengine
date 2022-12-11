@@ -28,6 +28,9 @@ class TextureAtlas {
 		TextureAtlas(int resolution, int side_len, const char* missing_tex_path);
 		~TextureAtlas();
 
+		//Whether or not the texture atlas has been flushed
+		bool flushed;
+
 		//Length of a single scanline
 		int scanline_size;
 
@@ -38,11 +41,13 @@ class TextureAtlas {
 		int resolution;
 		
 		//Function to add an image file to the atlas
-		void add_image(const char* path, const char* name);
+		void add_image(const char* path, std::string name);
 		void add_image(const char* path);
-
 
 		//Function to retrieve texture coordinates from the atlas based on texture name
 		//Eventually should spit out a missing texture if not recognizes
 		glm::vec2 get_coords(const char* name);
+
+		//Function to flush the texture data from the atlas, to reduce memory usage
+		void flush();
 };

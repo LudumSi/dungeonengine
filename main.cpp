@@ -192,31 +192,31 @@ int main() {
 	world.subscribe_system<PlayerControl>(&control);
 
 	EntityHandle test = world.create_entity();
-	test.add<Sprite>(new Sprite(&atlas, "assets/entities/wiz.png"));
+	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
 	test.add<Transform>(new Transform(100.f,100.f));
 	test.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
-	test.add<PlayerControl>(new PlayerControl{ 20.f, 0.02f, glm::vec2(0.f,0.f) });
+	test.add<PlayerControl>(new PlayerControl{ 50.f, 0.2f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();
-	ptest.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
 	ptest.add<Transform>(new Transform(0.f, 0.f));
 
 	EntityHandle ptest1 = world.create_entity();
-	ptest1.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest1.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
 	ptest1.add<Transform>(new Transform(300.f, 0.f));
 
 	EntityHandle ptest2 = world.create_entity();
-	ptest2.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest2.add<Sprite>(new Sprite(&atlas, "FUCK"));
 	ptest2.add<Transform>(new Transform(0.f, 300.f));
+
+	renderer.set_camera(100.f,100.f);
+	renderer.focus_entity = &test;
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;
 
 	double current_time = get_time_ms();
 	double accumulator = 0.0;
-
-	renderer.set_camera(100.f,100.f);
-	renderer.focus_entity = &test;
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
@@ -242,8 +242,6 @@ int main() {
 		}
 
 		//Render
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		renderer.render();
 		
 		glfwSwapBuffers(window);

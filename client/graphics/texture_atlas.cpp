@@ -10,6 +10,8 @@ TextureAtlas::TextureAtlas(int chunk, int size, const char* missing_tex) {
 	next_x = 0;
 	next_y = 0;
 
+	this->flushed = false;
+
 	/*
 	//Create assignment grid and fill it with falses to indicate nothing has been moved
 	assignment_grid = new bool*[side_len];
@@ -23,8 +25,6 @@ TextureAtlas::TextureAtlas(int chunk, int size, const char* missing_tex) {
 	*/
 
 	//Create buffer and fill it with empty data
-	//At some point there should be a default missing texture which should be loaded in here as well
-
 	scanline_size = resolution * side_len;
 
 	//side_len x side_len chunks, each of which are resolution x resolution
@@ -51,7 +51,29 @@ TextureAtlas::~TextureAtlas() {
 	}
 }
 
-void TextureAtlas::add_image(const char* path, const char* name) {
+//Removes the preceding "assets/" and the following .*
+std::string strip_texture_name(std::string tex_name){
+
+	//Remove the following .*
+	int idx = tex_name.find('.');
+	if(idx){
+		tex_name.erase(tex_name.begin()+idx, tex_name.end());
+	}
+
+	//Remove the preceding assets/
+	if(tex_name.find("assets/") == 0){
+		tex_name.erase(0,7);
+	}
+
+	return tex_name;
+}
+
+void TextureAtlas::add_image(const char* path, std::string name) {
+
+	//Check to make sure that the atlas is still writeable
+	if(flushed){
+		std::cout << "Cannot add " << path << " to texture atlas: Atlas not writeable" << std::endl;
+	}
 
 	//Check to make sure there are available coordinates
 	if (next_y >= side_len) {
@@ -81,10 +103,10 @@ void TextureAtlas::add_image(const char* path, const char* name) {
 	//Actually copy the new texture to the next available coordinates
 	texture->copy_image(&image, next_x * resolution, next_y * resolution);
 
-	//Save the texture coords in the dictionary along with the texture name
+	//Save the texture coords in the dictionary along with the stripped texture name
 	float tex_x = (float) next_x / (float) side_len;
 	float tex_y = (float) next_y / (float) side_len;
-	atlas[std::string(name)] = glm::vec2(tex_x, tex_y);
+	atlas[name] = glm::vec2(tex_x, tex_y);
 
 	//Update the next available coords
 	next_x++;
@@ -97,7 +119,7 @@ void TextureAtlas::add_image(const char* path, const char* name) {
 }
 
 void TextureAtlas::add_image(const char* path) {
-	TextureAtlas::add_image(path,path);
+	TextureAtlas::add_image(path, strip_texture_name(path));
 }
 
 glm::vec2 TextureAtlas::get_coords(const char* name) {
@@ -113,4 +135,11 @@ glm::vec2 TextureAtlas::get_coords(const char* name) {
 	else {
 		return glm::vec2(0, 0);
 	}
+}
+
+void TextureAtlas::flush(){
+	if(!flushed && texture){
+		delete texture;
+	}
+	flushed = true;
 }

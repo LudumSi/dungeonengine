@@ -87,7 +87,6 @@ void ComponentManager<CompType>::remove_component(Entity e) {
 	//Remove e
 	entity_to_comp.erase(e);
 	comp_to_entity.erase(len);
-
 }
 
 template <class CompType>
@@ -121,11 +120,6 @@ class System {
 		void register_entity(Entity);
 		//Unregister entity
 		void deregister_entity(Entity);
-
-		//Update function
-		virtual void update(float delta) = 0;
-		//Render function
-		virtual void render() = 0;
 };
 
 class EntityHandle;
