@@ -111,28 +111,6 @@ double get_time_ms() {
 
 int main() {
 
-	//ecstest();
-	/*
-	std::string ip;
-	int port;
-	std::cout << "Enter IP: ";
-	std::cin >> ip;
-
-	std::cout << "Enter Port: ";
-	std::cin >> port;
-
-	Client c(port);
-
-	c.connect(ip.c_str());
-	c.bind_listener();
-	
-	std::thread th_snd(send_func, &c);
-	std::thread th_rcv(recv_func, &c);
-
-	th_snd.join();
-	th_rcv.join();
-	*/
-
 	//Initialize GLFW
 	if (!glfwInit())
 	{
