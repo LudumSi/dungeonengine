@@ -3,6 +3,10 @@ project(Dungeon)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
+add_compile_options(
+       -g3
+)
+
 add_executable(client 
 	main.cpp 
 	client/graphics/render.cpp

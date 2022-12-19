@@ -8,8 +8,6 @@
 class ControlSystem : public System {
 
 	private:
-		ComponentManager<PhysicsComp>* deltas;
-		ComponentManager<PlayerControl>* players;
 		std::queue<MoveCommand>* actions;
 
 		int left;
@@ -17,7 +15,6 @@ class ControlSystem : public System {
 
 	public:
 
-		ControlSystem(std::queue<MoveCommand>* actions, ComponentManager<PhysicsComp>* deltas, ComponentManager<PlayerControl>* players);
+		ControlSystem(World* world, std::queue<MoveCommand>* actions);
 		void update(float delta);
-		void render();
 };

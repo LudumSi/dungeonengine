@@ -108,28 +108,6 @@ double get_time_ms() {
 
 int main() {
 
-	//ecstest();
-	/*
-	std::string ip;
-	int port;
-	std::cout << "Enter IP: ";
-	std::cin >> ip;
-
-	std::cout << "Enter Port: ";
-	std::cin >> port;
-
-	Client c(port);
-
-	c.connect(ip.c_str());
-	c.bind_listener();
-	
-	std::thread th_snd(send_func, &c);
-	std::thread th_rcv(recv_func, &c);
-
-	th_snd.join();
-	th_rcv.join();
-	*/
-
 	//Initialize GLFW
 	if (!glfwInit())
 	{
@@ -176,18 +154,21 @@ int main() {
 	ComponentManager<Transform> tmanager;
 	ComponentManager<PhysicsComp> physmanager;
 	ComponentManager<PlayerControl> controlmanager;
-	RenderSystem renderer = RenderSystem(window, &atlas, &spritemanager, &tmanager);
-	PhysicsSystem physics = PhysicsSystem(&tmanager, &physmanager);
-	ControlSystem control = ControlSystem(&actionqueue, &physmanager, &controlmanager);
-
+	
 	world.add_manager<Sprite>(&spritemanager);
 	world.add_manager<Transform>(&tmanager);
 	world.add_manager<PhysicsComp>(&physmanager);
 	world.add_manager<PlayerControl>(&controlmanager);
-	world.subscribe_system<Sprite>(&renderer);
+
+	RenderSystem renderer = RenderSystem(&world, window, &atlas);
 	world.subscribe_system<Transform>(&renderer);
+	world.subscribe_system<Sprite>(&renderer);
+	
+	PhysicsSystem physics = PhysicsSystem(&world);
 	world.subscribe_system<Transform>(&physics);
 	world.subscribe_system<PhysicsComp>(&physics);
+	
+	ControlSystem control = ControlSystem(&world, &actionqueue);
 	world.subscribe_system<PhysicsComp>(&control);
 	world.subscribe_system<PlayerControl>(&control);
 

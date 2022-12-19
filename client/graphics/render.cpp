@@ -1,5 +1,3 @@
-#pragma once
-
 #include "render.h"
 #include <iostream>
 #include <fstream>
@@ -117,7 +115,7 @@ unsigned int setup_texture(TextureAtlas* atlas) {
 	return texture;
 }
 
-RenderSystem::RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentManager<Sprite>* sprites, ComponentManager<Transform>* positions) {
+RenderSystem::RenderSystem(World* world, GLFWwindow* window, TextureAtlas* atlas): System(world) {
 
 	//Set up height and width
 	this->window = window;
@@ -148,10 +146,6 @@ void RenderSystem::set_camera(float x, float y){
 	this->camera_position = glm::vec3(x,y,0.f);
 }
 
-void RenderSystem::update(float delta_t) {
-	return;
-}
-
 void RenderSystem::render() {
 
 	//Clear previous frame
@@ -179,22 +173,23 @@ void RenderSystem::render() {
 	glUniformMatrix4fv(camera_loc, 1, GL_FALSE, glm::value_ptr(camera_matrix));
 	
 	//Draw all sprites in the sprites
-	for (std::vector<Entity>::iterator it = entities.begin(); it != entities.end(); ++it) {
+	for (auto & entity : entities) {
 
-		Sprite* sprite = sprites->get_component(*it);
-		Transform* position = positions->get_component(*it);
+		Sprite* sprite = world->get_component<Sprite>(entity);
+		Transform* position = world->get_component<Transform>(entity);
 
-		if(sprite && position){
+		//printf("%x\n", world);
+		//world->unpack(entity, sprite, position);
 
-			//Set transform matrix
-			int transform_loc = glGetUniformLocation(shader, "transform");
-			glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(position->transform));
+		if(!sprite || !position) continue;
 
-			//Bind the vertex array and draw the sprite
-			glBindVertexArray(sprite->VAO);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//Set transform matrix
+		int transform_loc = glGetUniformLocation(shader, "transform");
+		glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(position->transform));
 
-		}
+		//Bind the vertex array and draw the sprite
+		glBindVertexArray(sprite->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
 }

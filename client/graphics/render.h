@@ -26,9 +26,8 @@ class RenderSystem : public System {
 		//Position of the entity we're following
 		EntityHandle* focus_entity;
 		
-		RenderSystem(GLFWwindow* window, TextureAtlas* atlas, ComponentManager<Sprite>* spriteman, ComponentManager<Transform>* positions);
+		RenderSystem(World* world, GLFWwindow* window, TextureAtlas* atlas);
 
-		void update(float delta);
 		void render();
 
 		void set_camera(float, float);

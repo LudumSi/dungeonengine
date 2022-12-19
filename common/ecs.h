@@ -14,7 +14,8 @@ typedef unsigned int Entity;
 class EntityManager {
 
 	private:
-		Entity id_index = 0;
+		//Start at one in case we ever need to check if an entity is valid
+		Entity id_index = 1;
 
 	public:
 		Entity create_entity();
@@ -106,23 +107,27 @@ CompType* ComponentManager<CompType>::get_component(Entity e) {
 	}
 }
 
+class World;
+class EntityHandle;
 class System {
 
 	protected:
 		//Array of entities the system cares about
 		std::vector<Entity> entities;
-
-		//Array of component managers. Can be used to show the component types
-
+		//World the system belongs to
+		World* world;
 	public:
 		
+		System(World* world){
+			this->world = world;
+		}
+
 		//Register entity
 		void register_entity(Entity);
 		//Unregister entity
 		void deregister_entity(Entity);
 };
 
-class EntityHandle;
 class World {
 
 	public:
@@ -180,7 +185,7 @@ class World {
 		//Returns a pointer to a component for a given entity
 		template <typename CompType>
 		CompType* get_component(Entity e) {
-			ComponentManager<CompType>* manager = get_manager<CompType>();
+			ComponentManager<CompType>* manager = this->get_manager<CompType>();
 			return manager->get_component(e);
 		}
 
@@ -194,7 +199,7 @@ class World {
 		//Get a component manager
 		template <typename CompType>
 		ComponentManager<CompType>* get_manager() {
-			
+
 			CompManagerBase* candidate = managers[get_manager_id<CompType>()];
 			//This line of code is horrifically unsafe
 			//...but it works :)
@@ -204,12 +209,12 @@ class World {
 			}
 			else {
 				//More than likely this code will never be called due to static cast always "working"
-				std::cout << "Could not cast manager for type " << *typeid(CompType).name() << std::endl;
+				std::cout << "Could not cast manager for type " << typeid(CompType).name() << std::endl;
 				exit(1);
 			}
 		}
 
-		//Subscribe a system to a component manager
+		//Subscribe a system to changes in a given component type
 		//Adds the system if it hasn't been already
 		template <typename CompType>
 		void subscribe_system(System* sys) {
@@ -217,7 +222,7 @@ class World {
 			if (!system_indices.count(sys)) {
 				add_system(sys);
 			}
-			subscribers[get_manager_id<CompType>()].push_back(system_indices[sys]);
+			subscribers[get_manager_id<CompType>()].push_back(system_indices[sys]);;
 		}
 		
 		//Add a system
@@ -231,12 +236,14 @@ class World {
 		//Check to ensure that the given type exists in the managers array
 		template <typename CompType>
 		const char* get_manager_id() {
+
 			const char* id = typeid(CompType).name();
+			
 			if (managers.count(id)) {
 				return id;
 			}
 			else {
-				std::cout << "Could not find manager for type " << *typeid(CompType).name() << std::endl;
+				std::cout << "Could not find manager for type " << typeid(CompType).name() << std::endl;
 				exit(1);
 			}
 		}
