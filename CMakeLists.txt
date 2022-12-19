@@ -14,7 +14,7 @@ add_executable(client
 	client/graphics/texture.cpp
 	client/graphics/texture_atlas.cpp
 	client/control.cpp
-	common/ecs.cpp
+	common/ecs/ecs.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
@@ -22,6 +22,7 @@ add_executable(client
 
 target_include_directories(client PRIVATE include)
 target_include_directories(client PRIVATE common)
+target_include_directories(client PRIVATE common/ecs)
 target_include_directories(client PRIVATE client)
 target_include_directories(client PRIVATE extern)
 

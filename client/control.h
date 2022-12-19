@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../common/ecs.h"
+#include "ecs.h"
 #include "playercontrol.h"
-#include "../common/transform.h"
+#include "transform.h"
 #include <queue>
 
 class ControlSystem : public System {

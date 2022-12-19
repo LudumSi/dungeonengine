@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../common/ecs.h"
+#include "ecs.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW\glfw3.h"
 #include "sprite.h"
-#include "../common/transform.h"
+#include "transform.h"
 
 class RenderSystem : public System {
 

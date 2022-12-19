@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "typeinfo": "cpp"
     },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {
