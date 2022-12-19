@@ -14,7 +14,10 @@ add_executable(client
 	client/graphics/texture.cpp
 	client/graphics/texture_atlas.cpp
 	client/control.cpp
-	common/ecs/ecs.cpp
+	common/ecs/entity.cpp
+	common/ecs/system.cpp
+	common/ecs/world.cpp
+	common/ecs/entityhandle.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
