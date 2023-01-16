@@ -11,14 +11,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "client/graphics/texture_atlas.h"
-#include "client/graphics/sprite.h"
-#include "client/graphics/render.h"
-#include "common/physics.h"
-#include "client/playercontrol.h"
-#include "client/control.h"
+#include "graphics/texture_atlas.h"
+#include "graphics/sprite.h"
+#include "graphics/render.h"
+#include "physics.h"
+#include "playercontrol.h"
+#include "control.h"
 
-#include "client/Client.h"
+#include "Client.h"
 #include <mutex>
 #include <thread>
 
