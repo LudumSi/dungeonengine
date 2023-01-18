@@ -18,7 +18,7 @@
 #include "playercontrol.h"
 #include "control.h"
 
-#include "Client.h"
+#include "network/network_manager.h"
 #include <mutex>
 #include <thread>
 
@@ -30,7 +30,104 @@
 int win_width = 640;
 int win_height = 480;
 
+std::mutex outbox_mutex;
+std::mutex inbox_mutex;
+
+std::queue<std::string> outbox;
+std::queue<std::string> inbox;
+
 using namespace std;
+
+void process_inbox() {
+    std::string message;
+    do {
+        message = "";
+        
+        inbox_mutex.lock();
+        
+        if(!inbox.empty()) {
+            message = inbox.front();
+            inbox.pop();
+            std::cout << message << std::endl;
+        }
+                
+        inbox_mutex.unlock();
+        
+    } while(message != "logout");
+}
+
+void process_outbox() {
+    std::string message;
+    do {
+        printf("Input CLIENT message: ");
+        getline(std::cin, message, '\n');
+        
+        outbox_mutex.lock();
+        outbox.push(message);
+        outbox_mutex.unlock();
+
+    } while(message != "logout");
+}
+
+void recv_clients(SOCKET* server_socket, sockaddr_in* client) {
+	std::string message;
+	int client_length = 0;
+	char buf[1024];
+
+	do {
+		// Wait for messages from clients
+		client_length = sizeof(*client);
+		ZeroMemory(client, client_length);
+		
+		ZeroMemory(buf, 1024);
+
+		int bytes_in = recvfrom(*server_socket, buf, 1024, 0, (sockaddr*)client, &client_length);
+
+		if(bytes_in == SOCKET_ERROR) {
+			// Error bad
+			continue;
+		}
+
+		// WE SHOULD GET INFORMATION FROM THE CLIENT HERE
+		// can verify things like IP and specific ids
+		// Turn data into packeted info?
+
+		if(bytes_in > 0) {
+			message = buf;
+			std::cout << "Received data from someone" << std::endl;
+			inbox_mutex.lock();
+			inbox.push(buf);
+			inbox_mutex.unlock();
+		}
+	} while(message != "logout");
+}
+
+void send_clients(SOCKET* server_socket, sockaddr_in* client) {
+    //ZeroMemory(&client, client_length);
+    std::string message;
+    // Serialize data here?
+
+    // Send out data from outbox
+	do {
+		outbox_mutex.lock();
+		if(!outbox.empty()) {
+			message = outbox.front();
+			std::cout << "Sending " << message << " to someone" << std::endl;
+
+			int bytes_out = sendto(*server_socket, message.c_str(), message.length() + 1, 0, (sockaddr*)client, sizeof(*client));
+			if(bytes_out == SOCKET_ERROR) {
+				std::cout << "UHHHHHHHH" << std::endl;
+				outbox.pop();
+			} else {
+				std::cout << "CLIENT: Successful send" << std::endl;
+				outbox.pop();
+			}
+		}
+		outbox_mutex.unlock();
+	} while(message != "logout");
+    
+}
+
 
 //GLFW error callback function
 void error_callback(int error, const char* description)
@@ -107,6 +204,23 @@ double get_time_ms() {
 }
 
 int main() {
+
+	// Init Network Here
+    SOCKET server_socket;
+    sockaddr_in server_hints;
+    int port = 7777;
+	const char * ip = "192.168.254.11";
+
+    if(winsock_init() > 0) {
+        return EXIT_FAILURE;
+    }
+
+	set_server(&server_hints, &server_socket, port, ip);
+
+	//std::thread network_listener(recv_clients, &server_socket, &server_hints);
+    std::thread network_poster(send_clients, &server_socket, &server_hints);
+    std::thread inboxer(process_inbox); // Processes incoming data
+    std::thread outboxer(process_outbox); // Processes outgoing data. This belongs in the client
 
 	//Initialize GLFW
 	if (!glfwInit())
@@ -233,6 +347,12 @@ int main() {
 
 	//Shut down GLFW
 	glfwTerminate();
+
+	//network_listener.join();
+    network_poster.join();
+    inboxer.join();
+    outboxer.join();
+
 
 	return 0;
 }

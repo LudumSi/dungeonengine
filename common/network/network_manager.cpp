@@ -17,6 +17,17 @@ int winsock_init() {
 	return 0;
 }
 
+int set_server(sockaddr_in * server_hint, SOCKET * server_sock, int port, const char * ip) {
+
+	server_hint->sin_family = AF_INET;
+	server_hint->sin_port = htons(port);
+	inet_pton(AF_INET, ip, &(server_hint->sin_addr));
+
+	*server_sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+	return 0;
+}
+
 int bind_listener(sockaddr_in * listening_sockaddr, SOCKET* listening_sock, int port, const char * ip) {
 	std::cout << "Binding listening socket at " << (ip ? ip : "ANY") << " : " << port << std::endl;
 
@@ -45,7 +56,7 @@ int bind_listener(sockaddr_in * listening_sockaddr, SOCKET* listening_sock, int 
 		return err;
 	}
 
-	return 0;
+	return err;
 }
 
 packet* bytes_to_packet(int* bytes, int n_bytes) {

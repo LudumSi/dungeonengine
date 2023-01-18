@@ -24,4 +24,5 @@ enum commands {
 
 int winsock_init();
 int bind_listener(sockaddr_in*, SOCKET*, int, const char*);
+int set_server(sockaddr_in *, SOCKET *, int, const char *);
 packet* bytes_to_packet(int*, int);
