@@ -1,11 +1,10 @@
 
-#pragma once
+#pragma once 
 
 #include <iostream>
 #include <WS2tcpip.h>
-#include <array>
 
-#pragma comment(lib,"ws2_32.lib") //Winsock Library
+//#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define MAX_PACK_BYTES 1024
 #define MAX_CLIENTS 8

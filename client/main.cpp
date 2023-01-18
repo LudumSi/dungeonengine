@@ -24,9 +24,6 @@
 
 #include <queue>
 
-#include <GameNetworkingSockets/include/steam/steamnetworkingsockets.h>
-#include <GameNetworkingSockets/include/steam/steamnetworkingtypes.h>
-
 //TODO: Cross compatability
 #include <windows.h>
 

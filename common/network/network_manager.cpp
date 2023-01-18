@@ -1,5 +1,5 @@
 
-#include "NetworkManager.h"
+#include "network_manager.h"
 
 int winsock_init() {
 	std::cout << "Initializing winsock" << std::endl;

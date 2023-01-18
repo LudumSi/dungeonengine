@@ -14,6 +14,7 @@ add_executable(client
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
+	common/network/network_manager.cpp
 )
 
 add_executable(server 
@@ -22,7 +23,13 @@ add_executable(server
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
+	common/network/network_manager.cpp
 )
+
+if(WIN32)
+  target_link_libraries(client wsock32 ws2_32)
+  target_link_libraries(server wsock32 ws2_32)
+endif()
 
 target_include_directories(client PRIVATE include)
 target_include_directories(client PRIVATE common)

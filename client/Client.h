@@ -1,5 +1,5 @@
 #pragma once
-#include "../common/network/NetworkManager.h"
+#include "network/network_manager.h"
 /*
 class Client {
 private:
