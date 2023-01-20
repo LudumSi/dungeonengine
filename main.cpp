@@ -143,11 +143,16 @@ int main() {
 
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 
+	//Set up camera
+	Camera* camera = new Camera(window);
+
+	//Set up sprite texture atlas
 	stbi_set_flip_vertically_on_load(true);
 	TextureAtlas atlas = TextureAtlas(256, 3, "assets/debug/daddy.png");
 	atlas.add_image("assets/debug/gradient.png");
 	atlas.add_image("assets/entities/wiz.png");
 
+	//Set up ECS
 	World world;
 	
 	world.add_manager<Sprite>();
@@ -155,7 +160,7 @@ int main() {
 	world.add_manager<PhysicsComp>();
 	world.add_manager<PlayerControl>();
 
-	SpriteRenderSystem renderer = SpriteRenderSystem(&world, window, &atlas);
+	SpriteRenderSystem renderer = SpriteRenderSystem(&world, camera, &atlas);
 	world.subscribe_system<Transform>(&renderer);
 	world.subscribe_system<Sprite>(&renderer);
 	
@@ -163,9 +168,10 @@ int main() {
 	world.subscribe_system<Transform>(&physics);
 	world.subscribe_system<PhysicsComp>(&physics);
 	
-	ControlSystem control = ControlSystem(&world, &actionqueue);
+	ControlSystem control = ControlSystem(&world, &actionqueue, camera);
 	world.subscribe_system<PhysicsComp>(&control);
 	world.subscribe_system<PlayerControl>(&control);
+	world.subscribe_system<Transform>(&control);
 
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
@@ -184,9 +190,6 @@ int main() {
 	EntityHandle ptest2 = world.create_entity();
 	ptest2.add<Sprite>(new Sprite(&atlas, "FUCK"));
 	ptest2.add<Transform>(new Transform(0.f, 300.f));
-
-	renderer.set_camera(100.f,100.f);
-	renderer.focus_entity = &test;
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;

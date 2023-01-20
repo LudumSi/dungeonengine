@@ -1,7 +1,7 @@
 #include "control.h"
 
-ControlSystem::ControlSystem(World* world, std::queue<MoveCommand>* actions): System(world) {
-
+ControlSystem::ControlSystem(World* world, std::queue<MoveCommand>* actions, Camera* camera): System(world) {
+	this->camera = camera;
 	this->actions = actions;
 	this->up = 0;
 	this->left = 0;
@@ -46,8 +46,9 @@ void ControlSystem::update(float dt) {
 
 		PhysicsComp* physics = world->get_component<PhysicsComp>(entity);
 		PlayerControl* player = world->get_component<PlayerControl>(entity);
+		Transform* transform = world->get_component<Transform>(entity);
 
-		if (!physics || !player) continue;
+		if (!physics || !player || !transform) continue;
 
 		//Remove previous velocity
 		//printf("Prev accel: %f %f\n", physics->acceleration.x, physics->acceleration.y);
@@ -75,5 +76,8 @@ void ControlSystem::update(float dt) {
 		//Apply new velocity
 		physics->velocity += new_velocity;
 		player->prev_movement = new_velocity;
+
+		//Update camera position
+		camera->set_camera(glm::vec2(transform->get_position()));
 	}
 }

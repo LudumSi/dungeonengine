@@ -9,6 +9,7 @@ add_compile_options(
 
 add_executable(client 
 	main.cpp 
+	client/graphics/camera.cpp
 	client/graphics/render_helpers.cpp
 	client/graphics/sprite_render.cpp
 	client/graphics/sprite.cpp
