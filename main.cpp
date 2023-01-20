@@ -13,7 +13,7 @@
 
 #include "client/graphics/texture_atlas.h"
 #include "client/graphics/sprite.h"
-#include "client/graphics/render.h"
+#include "client/graphics/sprite_render.h"
 #include "common/physics.h"
 #include "client/playercontrol.h"
 #include "client/control.h"
@@ -155,7 +155,7 @@ int main() {
 	world.add_manager<PhysicsComp>();
 	world.add_manager<PlayerControl>();
 
-	RenderSystem renderer = RenderSystem(&world, window, &atlas);
+	SpriteRenderSystem renderer = SpriteRenderSystem(&world, window, &atlas);
 	world.subscribe_system<Transform>(&renderer);
 	world.subscribe_system<Sprite>(&renderer);
 	

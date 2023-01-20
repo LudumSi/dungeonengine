@@ -6,15 +6,13 @@
 #include "sprite.h"
 #include "transform.h"
 
-class RenderSystem : public System {
+class SpriteRenderSystem : public System {
 
 	private:
 		GLFWwindow* window;
 		unsigned int shader;
 		unsigned int texture;
 		glm::mat4 projection;
-		ComponentManager<Sprite>* sprites;
-		ComponentManager<Transform>* positions;
 
 		int win_height;
 		int win_width;
@@ -26,7 +24,7 @@ class RenderSystem : public System {
 		//Position of the entity we're following
 		EntityHandle* focus_entity;
 		
-		RenderSystem(World* world, GLFWwindow* window, TextureAtlas* atlas);
+		SpriteRenderSystem(World* world, GLFWwindow* window, TextureAtlas* atlas);
 
 		void render();
 

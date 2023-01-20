@@ -9,7 +9,8 @@ add_compile_options(
 
 add_executable(client 
 	main.cpp 
-	client/graphics/render.cpp
+	client/graphics/render_helpers.cpp
+	client/graphics/sprite_render.cpp
 	client/graphics/sprite.cpp
 	client/graphics/texture.cpp
 	client/graphics/texture_atlas.cpp

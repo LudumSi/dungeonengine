@@ -1,10 +1,8 @@
-#include "render.h"
-#include <iostream>
-#include <fstream>
+#include "render_helpers.h"
+
 #include "glad\glad.h"
 #include "glm\gtc\matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include <stb_image.h>
+#include "glm\gtc\type_ptr.hpp"
 
 //Function to get shader file data
 std::string get_file(const char* filename) {
@@ -28,15 +26,20 @@ std::string get_file(const char* filename) {
 }
 
 //Function to make shader program
-unsigned int get_shaders() {
+//shader_name is prefix to the .vert and .frag shaders
+unsigned int get_shaders(const char* shader_name) {
 
 	//Set up shaders
+
+    //Set up shader names
+    std::string vert_name = "shaders/" + std::string(shader_name) + ".vert";
+    std::string frag_name = "shaders/" + std::string(shader_name) + ".frag";
 
 	//Get and compile vertex shader from source
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-	std::string vertexSource = get_file("shaders/basic.vert");
+	std::string vertexSource = get_file(vert_name.c_str());
 	if (vertexSource.length() <= 0) {
 		std::cout << "Vertex shader could not be loaded!" << std::endl;
 		exit(1);
@@ -61,7 +64,7 @@ unsigned int get_shaders() {
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	std::string fragSource = get_file("shaders/basic.frag");
+	std::string fragSource = get_file(frag_name.c_str());
 
 	if (fragSource.length() <= 0) {
 		std::cout << "Fragment shader could not be loaded!" << std::endl;
@@ -98,7 +101,7 @@ unsigned int get_shaders() {
 }
 
 //Sets up texture
-unsigned int setup_texture(TextureAtlas* atlas) {
+unsigned int texture_from_atlas(TextureAtlas* atlas) {
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -113,83 +116,4 @@ unsigned int setup_texture(TextureAtlas* atlas) {
 
 	atlas->flush();
 	return texture;
-}
-
-RenderSystem::RenderSystem(World* world, GLFWwindow* window, TextureAtlas* atlas): System(world) {
-
-	//Set up height and width
-	this->window = window;
-	glfwGetFramebufferSize(window, &win_width, &win_height);
-
-	//Set up shaders
-	this->shader = get_shaders();
-
-	//Set up textures
-	if(!atlas->flushed){
-		this->texture = setup_texture(atlas);
-	}else{
-		printf("Failed to create render system; atlas has already been consumed\n");
-	}
-
-	//View matrix
-	//TODO: Fix things so that the Y-axis works as traditionally expected
-	this->projection = glm::ortho(-1.f * (float)win_width/2, (float)win_width/2, (float)win_height/2, -1.f * (float)win_height/2, -1.0f, 1.0f);
-
-	this->sprites = sprites;
-	this->positions = positions;
-
-	this->focus_entity = NULL;
-	this->camera_position = glm::vec3(0.f,0.f,0.f);
-}
-
-void RenderSystem::set_camera(float x, float y){
-	this->camera_position = glm::vec3(x,y,0.f);
-}
-
-void RenderSystem::render() {
-
-	//Clear previous frame
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glUseProgram(shader);
-
-	//Set projection matrix uniform
-	int project_loc = glGetUniformLocation(shader, "projection");
-	glUniformMatrix4fv(project_loc, 1, GL_FALSE, glm::value_ptr(projection));
-
-	//Set up camera view matrix
-	glm::mat4 camera_matrix = glm::mat3(1.0);
-
-	if(focus_entity){
-		if(focus_entity->has<Transform>()){
-			camera_position = focus_entity->get<Transform>()->get_position();
-		}
-	}
-
-	camera_matrix = glm::translate(camera_matrix, (-1.f * camera_position));
-	int camera_loc = glGetUniformLocation(shader, "camera_view");
-	glUniformMatrix4fv(camera_loc, 1, GL_FALSE, glm::value_ptr(camera_matrix));
-	
-	//Draw all sprites in the sprites
-	for (auto & entity : entities) {
-
-		Sprite* sprite = world->get_component<Sprite>(entity);
-		Transform* position = world->get_component<Transform>(entity);
-
-		//printf("%x\n", world);
-		//world->unpack(entity, sprite, position);
-
-		if(!sprite || !position) continue;
-
-		//Set transform matrix
-		int transform_loc = glGetUniformLocation(shader, "transform");
-		glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(position->transform));
-
-		//Bind the vertex array and draw the sprite
-		glBindVertexArray(sprite->VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	}
-
 }
