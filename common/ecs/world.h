@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
 #include <iostream>
 
 #include "entity.h"
@@ -30,15 +31,23 @@ class World {
 		}
 
 		//Add a component to an entity
-		//Also updates systems
+		//Also updates systems entity lists
 		template <typename CompType>
 		void add_component(Entity e, CompType* comp) {
+			
+			//Actually add the component to the entity
 			ComponentManager<CompType>* manager = get_manager<CompType>();
 			manager->add_component(e,comp);
 
-			std::vector<int> indices = subscribers[get_manager_id<CompType>()];
-			for (int i = 0; i < indices.size(); i++) {
-				systems[indices[i]]->register_entity(e);
+			//Update systems about this change
+			//Iterate through all systems which use this component
+			auto range = comp_type_to_system.equal_range(get_manager_id<CompType>());
+			for(auto it = range.first; it != range.second; ++it){
+
+				//If so, add the entity
+				if(has_system_components(e, it->second)){
+					it->second->register_entity(e);
+				}
 			}
 		}
 
@@ -49,9 +58,15 @@ class World {
 			ComponentManager<CompType>* manager = get_manager<CompType>();
 			manager->remove_component(e);
 
-			std::vector<int> indices = subscribers[get_manager_id<CompType>()];
-			for (int i = 0; i < indices.size(); i++) {
-				systems[indices[i]]->deregister_entity(e);
+			//Update systems about this change
+			//Iterate through all systems which use this component
+			auto range = comp_type_to_system.equal_range(get_manager_id<CompType>());
+			for(auto it = range.first; it != range.second; ++it){
+
+				//If so, add the entity
+				if(has_system_components(e, it->second)){
+					it->second->deregister_entity(e);
+				}
 			}
 		}
 
@@ -99,15 +114,26 @@ class World {
 		template <typename CompType>
 		void subscribe_system(System* sys) {
 
-			if (!system_indices.count(sys)) {
+			bool already_added = false;
+			for(int i = 0; i < systems.size(); i++){
+				if(systems[i] == sys){
+					already_added = true;
+					break;
+				}
+			}
+
+			if(!already_added){
 				add_system(sys);
 			}
-			subscribers[get_manager_id<CompType>()].push_back(system_indices[sys]);;
+
+			const char* comp_id = get_manager_id<CompType>();
+
+			comp_type_to_system.insert(std::pair<const char*, System*>(comp_id,sys));
+			system_to_comp_type.insert(std::pair<System*, const char*>(sys, comp_id));
 		}
 		
 		//Add a system
 		void add_system(System* sys) {
-			system_indices[sys] = (int)systems.size();
 			systems.push_back(sys);
 		}
 
@@ -128,6 +154,30 @@ class World {
 			}
 		}
 
+		//Sees if the entity has the given component
+		bool has_component_by_id(Entity e, const char* id) {
+			CompManagerBase* manager = managers[id];
+			return manager->has_component(e);
+		}
+
+		//Check to see whether an entity has all the components a given system cares about
+		bool has_system_components(Entity e, System* sys){
+
+			bool has_all = true;
+
+			//See if the entity now has all the components the system cares about
+				auto range = system_to_comp_type.equal_range(sys);
+				for(auto it = range.first; it != range.second; ++it){
+					
+					if(!has_component_by_id(e, it->second)){
+						has_all = false;
+						break;
+					}
+				}
+
+			return has_all;
+		}
+
 		//Entity manager
 		EntityManager e_manager;
 
@@ -136,9 +186,9 @@ class World {
 
 		//Vector of systems
 		std::vector<System*> systems;
-		//Map of systems back to indices
-		std::map<System*, int> system_indices;
 
 		//Map of manager pointers to vectors of indices of systems which need to be updated
-		std::map<const char*, std::vector<int>> subscribers;
+		std::unordered_multimap<const char*, System*> comp_type_to_system;
+		std::unordered_multimap<System*, const char*> system_to_comp_type;
+		
 };

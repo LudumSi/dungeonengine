@@ -13,6 +13,7 @@ class Component;
 class CompManagerBase {
 	public:
 		virtual void remove_component(Entity)=0;
+		virtual bool has_component(Entity)=0;
 };
 
 template <class CompType>
