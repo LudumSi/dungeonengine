@@ -149,16 +149,11 @@ int main() {
 	atlas.add_image("assets/entities/wiz.png");
 
 	World world;
-	EntityManager emanager;
-	ComponentManager<Sprite> spritemanager;
-	ComponentManager<Transform> tmanager;
-	ComponentManager<PhysicsComp> physmanager;
-	ComponentManager<PlayerControl> controlmanager;
 	
-	world.add_manager<Sprite>(&spritemanager);
-	world.add_manager<Transform>(&tmanager);
-	world.add_manager<PhysicsComp>(&physmanager);
-	world.add_manager<PlayerControl>(&controlmanager);
+	world.add_manager<Sprite>();
+	world.add_manager<Transform>();
+	world.add_manager<PhysicsComp>();
+	world.add_manager<PlayerControl>();
 
 	RenderSystem renderer = RenderSystem(&world, window, &atlas);
 	world.subscribe_system<Transform>(&renderer);

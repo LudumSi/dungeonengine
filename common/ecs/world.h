@@ -86,7 +86,8 @@ class World {
 
 		//Add a component manager
 		template <typename CompType>
-		void add_manager(ComponentManager<CompType>* man) {
+		void add_manager() {
+			ComponentManager<CompType>* man = new ComponentManager<CompType>;
 			const char* id = typeid(CompType).name();
 			managers[id] = (CompManagerBase*)man;
 		}
