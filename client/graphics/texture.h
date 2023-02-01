@@ -25,6 +25,8 @@ class Texture {
 		//Construct a texture from a loaded file
 		//Not guranteed to work, check loaded
 		Texture(const char* path);
+		//Construct a texture from a bitmap buffer
+		Texture(unsigned char* bitmap, int width, int height);
 		
 		~Texture();
 

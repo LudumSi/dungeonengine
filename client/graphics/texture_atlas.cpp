@@ -68,21 +68,18 @@ std::string strip_texture_name(std::string tex_name){
 	return tex_name;
 }
 
-void TextureAtlas::add_image(const char* path, std::string name) {
+void TextureAtlas::add_image(Texture image, std::string name) {
 
 	//Check to make sure that the atlas is still writeable
 	if(flushed){
-		std::cout << "Cannot add " << path << " to texture atlas: Atlas not writeable" << std::endl;
+		std::cout << "Cannot add " << name << " to texture atlas: Atlas not writeable" << std::endl;
 	}
 
 	//Check to make sure there are available coordinates
 	if (next_y >= side_len) {
-		std::cout << "Cannot add " << path << " to texture atlas: Atlas full" << std::endl;
+		std::cout << "Cannot add " << name << " to texture atlas: Atlas full" << std::endl;
 		return;
 	}
-
-	//Create a new texture based on the path
-	Texture image = Texture(path);
 
 	//Catch failure to load image
 	//Texture loader will already have printed an error
@@ -91,12 +88,12 @@ void TextureAtlas::add_image(const char* path, std::string name) {
 	//Check that the image height and width are equal to atlas resolution
 	//At some point should handle integer multiples but we'll cross that bridge when we get to it
 	if (image.height != resolution) {
-		std::cerr << "Image " << path << " with a height of " << image.height << " is longer than " << resolution << std::endl;
+		std::cerr << "Image " << name << " with a height of " << image.height << " is longer than " << resolution << std::endl;
 		return;
 	}
 
 	if (image.width != resolution) {
-		std::cerr << "Image " << path << " with a width of " << image.width << " is longer than " << resolution << std::endl;
+		std::cerr << "Image " << name << " with a width of " << image.width << " is longer than " << resolution << std::endl;
 		return;
 	}
 
@@ -118,8 +115,18 @@ void TextureAtlas::add_image(const char* path, std::string name) {
 	//Texture is deleted when it goes out of scope
 }
 
+void TextureAtlas::add_image(const char* path, std::string name) {
+
+	//Create a new texture based on the path
+	add_image(Texture(path), name);
+}
+
 void TextureAtlas::add_image(const char* path) {
-	TextureAtlas::add_image(path, strip_texture_name(path));
+	add_image(path, strip_texture_name(path));
+}
+
+void TextureAtlas::add_image(unsigned char* bitmap, int width, int height, std::string name){
+	add_image(Texture(bitmap, width, height), name);
 }
 
 glm::vec2 TextureAtlas::get_coords(const char* name) {

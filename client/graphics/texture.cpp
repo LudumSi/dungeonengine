@@ -48,6 +48,14 @@ Texture::Texture(const char* path) {
 	}
 }
 
+Texture::Texture(unsigned char* buffer, int width, int height){
+
+	this->height = height;
+	this->width = width;
+	copy_image_raw((pixel*)buffer, width, height, 0, 0);
+
+}
+
 Texture::~Texture() {
 
 	if (buffer) {
