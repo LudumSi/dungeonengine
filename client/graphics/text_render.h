@@ -14,7 +14,6 @@ struct Character{
 
 struct Font{
     unsigned int texture;
-    TextureAtlas atlas;
     std::map<char, Character> characters;
 };
 
@@ -25,9 +24,12 @@ class TextRenderSystem : public System {
 		unsigned int shader;
 		unsigned int texture;
 		Camera* camera;
+        Font font;
+        unsigned int VAO;
 
 	public:
 	
 		TextRenderSystem(World* world, Camera* camera);
 		void render();
+        void generate_VAO();
 };

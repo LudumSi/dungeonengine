@@ -49,21 +49,26 @@ Texture::Texture(const char* path) {
 }
 
 Texture::Texture(unsigned char* buffer, int width, int height){
-
+	//printf("Buffer in texture: %x\n", buffer);
 	this->height = height;
 	this->width = width;
+	generate_buffer();
 	copy_image_raw((pixel*)buffer, width, height, 0, 0);
-
 }
 
 Texture::~Texture() {
-
+	//printf("Buffer in texture deconstructor: %x\n", buffer);
 	if (buffer) {
-		stbi_image_free(buffer);
+		if(height > 0 && width > 0){
+			stbi_image_free(buffer);
+		}
 	}
 }
 
+//Assumes a buffer is already generated
 void Texture::copy_image_raw(pixel* input, int in_width, int in_height, int x, int y) {
+
+	//printf("Buffer in copy_image: %x\n", input);
 
 	int buffer_x = x;
 	int buffer_y = y;

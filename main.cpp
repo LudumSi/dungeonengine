@@ -17,6 +17,7 @@
 #include "common/physics.h"
 #include "client/playercontrol.h"
 #include "client/control.h"
+#include "client/graphics/text_render.h"
 
 #include "client/Client.h"
 #include <mutex>
@@ -173,6 +174,8 @@ int main() {
 	world.subscribe_system<PlayerControl>(&control);
 	world.subscribe_system<Transform>(&control);
 
+	TextRenderSystem textrender = TextRenderSystem(&world, camera);
+
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
 	test.add<Transform>(new Transform(100.f,100.f));
@@ -223,6 +226,7 @@ int main() {
 		//Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.render();
+		textrender.render();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

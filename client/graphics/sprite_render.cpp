@@ -28,9 +28,7 @@ void SpriteRenderSystem::render() {
 	int project_loc = glGetUniformLocation(shader, "projection");
 	glUniformMatrix4fv(project_loc, 1, GL_FALSE, glm::value_ptr(camera->projection));
 
-	//Set up camera view matrix
-	glm::mat4 camera_matrix = glm::mat3(1.0);
-
+	//Set up camera matrix uniform
 	int camera_loc = glGetUniformLocation(shader, "camera_view");
 	glUniformMatrix4fv(camera_loc, 1, GL_FALSE, glm::value_ptr(camera->camera_view));
 	

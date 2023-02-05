@@ -46,7 +46,7 @@ TextureAtlas::~TextureAtlas() {
 	}
 	*/
 
-	if (texture) {
+	if (texture && !flushed) {
 		delete texture;
 	}
 }
@@ -87,12 +87,12 @@ void TextureAtlas::add_image(Texture image, std::string name) {
 
 	//Check that the image height and width are equal to atlas resolution
 	//At some point should handle integer multiples but we'll cross that bridge when we get to it
-	if (image.height != resolution) {
+	if (image.height > resolution) {
 		std::cerr << "Image " << name << " with a height of " << image.height << " is longer than " << resolution << std::endl;
 		return;
 	}
 
-	if (image.width != resolution) {
+	if (image.width > resolution) {
 		std::cerr << "Image " << name << " with a width of " << image.width << " is longer than " << resolution << std::endl;
 		return;
 	}
@@ -126,6 +126,7 @@ void TextureAtlas::add_image(const char* path) {
 }
 
 void TextureAtlas::add_image(unsigned char* bitmap, int width, int height, std::string name){
+	//printf("Buffer in add_image: %x\n", bitmap);
 	add_image(Texture(bitmap, width, height), name);
 }
 

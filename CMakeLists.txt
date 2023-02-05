@@ -13,6 +13,7 @@ add_executable(client
 	client/graphics/render_helpers.cpp
 	client/graphics/sprite_render.cpp
 	client/graphics/sprite.cpp
+	client/graphics/text_render.cpp
 	client/graphics/texture.cpp
 	client/graphics/texture_atlas.cpp
 	client/control.cpp
@@ -29,10 +30,12 @@ target_include_directories(client PRIVATE include)
 target_include_directories(client PRIVATE common)
 target_include_directories(client PRIVATE common/ecs)
 target_include_directories(client PRIVATE client)
-target_include_directories(client PRIVATE extern)
+target_include_directories(client PRIVATE extern/freetype-2.12.1/include)
 
 target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 
 install(TARGETS client DESTINATION "./")
 
 add_subdirectory(extern/freetype-2.12.1)
+
+target_link_libraries(client freetype)
