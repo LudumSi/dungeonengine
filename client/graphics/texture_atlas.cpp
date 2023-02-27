@@ -103,7 +103,6 @@ void TextureAtlas::add_image(Texture image, std::string name) {
 	//Save the texture coords in the dictionary along with the stripped texture name
 	float tex_x = (float) next_x / (float) side_len;
 	float tex_y = (float) next_y / (float) side_len;
-	printf("Name: %s\n", name);
 	atlas[name] = glm::vec2(tex_x, tex_y);
 
 	//Update the next available coords
@@ -129,7 +128,6 @@ void TextureAtlas::add_image(const char* path) {
 //Adds a raw bitmap
 //Bitmap must be 4 bytes per pixel RGBA for this to end up looking right
 void TextureAtlas::add_image(unsigned char* bitmap, int width, int height, std::string name){
-	//printf("Buffer in add_image: %x\n", bitmap);
 	add_image(Texture(bitmap, width, height), name);
 }
 

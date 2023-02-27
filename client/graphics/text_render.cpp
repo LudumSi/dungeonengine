@@ -16,7 +16,7 @@ unsigned char* bitmap_convert_1bpp_rgba(unsigned char* old_map, int px_width, in
 		new_map[4*i] = old_map[i];
 		new_map[(4*i)+1] = old_map[i];
 		new_map[(4*i)+2] = old_map[i];
-		new_map[(4*i)+3] = (char)1.f;
+		new_map[(4*i)+3] = old_map[i];
 	}
 
 	return new_map;
@@ -51,7 +51,7 @@ FT_Face initialize_fonts(FT_Library lib){
 
 Font generate_font(FT_Library lib){
 
-    const int height = 256;
+    const int height = 250;
     FT_Face face = initialize_fonts(lib);
     FT_Set_Pixel_Sizes(face, 0, height);
 
@@ -81,7 +81,6 @@ Font generate_font(FT_Library lib){
 		//OpenGL uses images flipped on the Y axis for some reason
 		buffer = bitmap_reverse_rgba(buffer, glyph_width, glyph_height);
 
-		printf("String: %s\n", str);
         atlas.add_image(buffer, glyph_width, glyph_height, str);
 
         //Store character data
