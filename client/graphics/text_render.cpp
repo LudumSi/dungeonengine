@@ -4,20 +4,44 @@
 #include "glm\gtc\type_ptr.hpp"
 
 #include <ft2build.h>
-#include FT_FREETYPE_H  
+#include FT_FREETYPE_H
+#include <freetype/ftbitmap.h>
 
-FT_Face initialize_fonts(){
-    
-    //Initialize FreeType
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft))
-	{
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+//Convert 1bpp bitmap output to RGBA
+unsigned char* bitmap_convert_1bpp_rgba(unsigned char* old_map, int px_width, int px_height){
+ 
+	unsigned char* new_map = new unsigned char[4*px_height*px_width];
+
+	for(int i = 0; i < px_height*px_width;i++){
+		new_map[4*i] = old_map[i];
+		new_map[(4*i)+1] = old_map[i];
+		new_map[(4*i)+2] = old_map[i];
+		new_map[(4*i)+3] = (char)1.f;
 	}
+
+	return new_map;
+}
+
+//Reverses a 4bpp bitmap row by row
+unsigned char* bitmap_reverse_rgba(unsigned char* old_map, int px_width, int px_height){
+	
+	unsigned char* new_map = new unsigned char[px_height*px_width*4];
+
+	int max = (px_height - 1) * px_width * 4;
+
+	for(int i = 0; i < px_height;i++){
+		int offset = i * px_width * 4;
+		memcpy(new_map + offset, old_map + max - offset, px_width * 4);
+	}
+
+	return new_map;
+}
+
+FT_Face initialize_fonts(FT_Library lib){
 
     //Generate font
 	FT_Face face;
-	if (FT_New_Face(ft, "assets/fonts/ComicNeue-Regular.ttf", 0, &face))
+	if (FT_New_Face(lib, "assets/fonts/ComicNeue-Regular.ttf", 0, &face))
 	{
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 	}
@@ -25,10 +49,10 @@ FT_Face initialize_fonts(){
     return face;
 }
 
-Font generate_font(){
+Font generate_font(FT_Library lib){
 
-    const int height = 48;
-    FT_Face face = initialize_fonts();
+    const int height = 256;
+    FT_Face face = initialize_fonts(lib);
     FT_Set_Pixel_Sizes(face, 0, height);
 
     TextureAtlas atlas = TextureAtlas(256, 10, "assets/debug/daddy.png");
@@ -46,12 +70,24 @@ Font generate_font(){
         //Add to texture atlas
         std::string str = std::string(1,c);
 		//printf("Buffer in text_renderer: %x\n", face->glyph->bitmap.buffer);
-        atlas.add_image(face->glyph->bitmap.buffer, face->glyph->bitmap.width, face->glyph->bitmap.rows, str);
+
+		int glyph_width = face->glyph->bitmap.width;
+		int glyph_height = face->glyph->bitmap.rows;
+		unsigned char* buffer = face->glyph->bitmap.buffer;
+
+		//Need to change image to a four-byte representation rather than the default 1-byte
+		buffer = bitmap_convert_1bpp_rgba(buffer, glyph_width, glyph_height);
+
+		//OpenGL uses images flipped on the Y axis for some reason
+		buffer = bitmap_reverse_rgba(buffer, glyph_width, glyph_height);
+
+		printf("String: %s\n", str);
+        atlas.add_image(buffer, glyph_width, glyph_height, str);
 
         //Store character data
         Character character;
         character.texture_coords = atlas.get_coords(&c);
-        character.size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+        character.size = glm::ivec2(glyph_width, glyph_height);
         character.bearing= glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
         character.advance = face->glyph->advance.x;
 
@@ -71,7 +107,14 @@ TextRenderSystem::TextRenderSystem(World* world, Camera* camera): System(world) 
 	//Set up shaders
 	this->shader = get_shaders("sprite");
 
-    this->font = generate_font();
+	//Initialize FreeType
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+	{
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+	}
+
+    this->font = generate_font(ft);
 
 	generate_VAO();
 }
@@ -83,7 +126,7 @@ void TextRenderSystem::generate_VAO() {
 		// positions        // texture coords
 		-500.f, -500.f, 0.f, 0.f, 1.f,   // top left
 		500.f, -500.f, 0.f, 1.f, 1.f, // top right
-		500.f, 500.f, 0.f, 1.f, 0.f// bottom right
+		500.f, 500.f, 0.f, 1.f, 0.f,// bottom right
 		-500.f, 500.f, 0.f, 0.f, 0.f// Bottom left
 	};
 
