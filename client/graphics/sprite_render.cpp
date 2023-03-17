@@ -38,9 +38,6 @@ void SpriteRenderSystem::render() {
 		Sprite* sprite = world->get_component<Sprite>(entity);
 		Transform* position = world->get_component<Transform>(entity);
 
-		//printf("%x\n", world);
-		//world->unpack(entity, sprite, position);
-
 		if(!sprite || !position) continue;
 
 		//Set transform matrix

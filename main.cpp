@@ -160,6 +160,7 @@ int main() {
 	world.add_manager<Transform>();
 	world.add_manager<PhysicsComp>();
 	world.add_manager<PlayerControl>();
+	world.add_manager<TextComp>();
 
 	SpriteRenderSystem renderer = SpriteRenderSystem(&world, camera, &atlas);
 	world.subscribe_system<Transform>(&renderer);
@@ -175,6 +176,8 @@ int main() {
 	world.subscribe_system<Transform>(&control);
 
 	TextRenderSystem textrender = TextRenderSystem(&world, camera);
+	world.subscribe_system<TextComp>(&textrender);
+	world.subscribe_system<Transform>(&textrender);
 
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
@@ -193,6 +196,10 @@ int main() {
 	EntityHandle ptest2 = world.create_entity();
 	ptest2.add<Sprite>(new Sprite(&atlas, "FUCK"));
 	ptest2.add<Transform>(new Transform(0.f, 300.f));
+
+	EntityHandle text_test = world.create_entity();
+	text_test.add<TextComp>(new TextComp{std::string("LIVE LAUGH CUM"), 0, false});
+	text_test.add<Transform>(new Transform(0.f,0.f));
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;

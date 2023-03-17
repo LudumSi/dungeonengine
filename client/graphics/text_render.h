@@ -5,6 +5,13 @@
 #include "sprite.h"
 #include "transform.h"
 
+struct TextComp {
+    
+    std::string str;
+    unsigned int VAO = 0;
+    bool VAO_generated = false;
+};
+
 struct Character{
     glm::vec2 texture_coords;
     glm::ivec2 size;
@@ -14,6 +21,7 @@ struct Character{
 
 struct Font{
     unsigned int texture;
+    TextureAtlas* atlas;
     std::map<char, Character> characters;
 };
 
@@ -31,5 +39,5 @@ class TextRenderSystem : public System {
 	
 		TextRenderSystem(World* world, Camera* camera);
 		void render();
-        void generate_VAO();
+        void generate_VAO(TextComp* comp);
 };

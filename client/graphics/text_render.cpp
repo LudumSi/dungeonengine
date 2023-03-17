@@ -55,9 +55,9 @@ Font generate_font(FT_Library lib){
     FT_Face face = initialize_fonts(lib);
     FT_Set_Pixel_Sizes(face, 0, height);
 
-    TextureAtlas atlas = TextureAtlas(256, 10, "assets/debug/daddy.png");
+    TextureAtlas* atlas = new TextureAtlas(256, 10, "assets/debug/daddy.png");
 
-    Font new_font = {0, std::map<char, Character>()};
+    Font new_font = {0, atlas, std::map<char, Character>()};
 
     //Start with space, go from there
     for(char c = 32; c < 127; c++){
@@ -68,8 +68,8 @@ Font generate_font(FT_Library lib){
         }
 
         //Add to texture atlas
-        std::string str = std::string(1,c);
-		//printf("Buffer in text_renderer: %x\n", face->glyph->bitmap.buffer);
+
+        std::string str(1, c);
 
 		int glyph_width = face->glyph->bitmap.width;
 		int glyph_height = face->glyph->bitmap.rows;
@@ -81,11 +81,11 @@ Font generate_font(FT_Library lib){
 		//OpenGL uses images flipped on the Y axis for some reason
 		buffer = bitmap_reverse_rgba(buffer, glyph_width, glyph_height);
 
-        atlas.add_image(buffer, glyph_width, glyph_height, str);
+        atlas->add_image(buffer, glyph_width, glyph_height, str);
 
         //Store character data
         Character character;
-        character.texture_coords = atlas.get_coords(&c);
+        character.texture_coords = atlas->get_coords(str.c_str());
         character.size = glm::ivec2(glyph_width, glyph_height);
         character.bearing= glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
         character.advance = face->glyph->advance.x;
@@ -94,7 +94,8 @@ Font generate_font(FT_Library lib){
     }
 
     //Turn the atlas into a texture
-    new_font.texture = texture_from_atlas(&atlas);
+    new_font.texture = texture_from_atlas(atlas);
+	new_font.atlas = atlas;
 
     return new_font;
 }
@@ -114,37 +115,47 @@ TextRenderSystem::TextRenderSystem(World* world, Camera* camera): System(world) 
 	}
 
     this->font = generate_font(ft);
-
-	generate_VAO();
 }
 
-void TextRenderSystem::generate_VAO() {
+void TextRenderSystem::generate_VAO(TextComp* comp){
 
-	//Quad
+    //Start with a simple sprite of the first char
+    char c = comp->str[0];
+	std::cout << c << std::endl;
+
+    //Get texture coordinates
+    Character glyph = font.characters[c];
+    glm::vec2 tex_coords = glyph.texture_coords;
+	float side_size = font.atlas->scanline_size;
+    glm::vec2 size = glm::vec2(glyph.size[0]/side_size,glyph.size[1]/side_size);
+
+	printf("Text coords: %f, %f. Size: %f, %f\n", tex_coords[0], tex_coords[1], tex_coords[0]+size[0], tex_coords[1]+size[1]);
+
+    //Quad
 	float vertices[] = {
-		// positions        // texture coords
-		-500.f, -500.f, 0.f, 0.f, 1.f,   // top left
-		500.f, -500.f, 0.f, 1.f, 1.f, // top right
-		500.f, 500.f, 0.f, 1.f, 0.f,// bottom right
-		-500.f, 500.f, 0.f, 0.f, 0.f// Bottom left
+		// positions       // texture coords
+		0.f,                  0.f,                  0.f, tex_coords[0],         tex_coords[1]+size[1],   // top left
+		(float)glyph.size[0], 0.f,                  0.f, tex_coords[0]+size[0], tex_coords[1]+size[1],   // top right
+		(float)glyph.size[0], (float)glyph.size[1], 0.f, tex_coords[0]+size[0], tex_coords[1],           // bottom right
+		0.f,                  (float)glyph.size[1], 0.f, tex_coords[0],         tex_coords[1],           // Bottom left
 	};
 
 	//Indices for triangles
 	unsigned int indices[] = {
-			0, 1, 3, // first triangle
-			1, 2, 3  // second triangle
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
 	};
 
-	unsigned int VBO;
+    unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
 	//Will only be a static image without this being updated
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 
-	glGenVertexArrays(1, &this->VAO);
+	glGenVertexArrays(1, &comp->VAO);
 
-	glBindVertexArray(this->VAO);
+	glBindVertexArray(comp->VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -158,11 +169,14 @@ void TextRenderSystem::generate_VAO() {
 	//Textures
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	comp->VAO_generated = true;
 }
 
 void TextRenderSystem::render() {
 
 	glActiveTexture(GL_TEXTURE0);
+	//Only one font for now, but might look into sorting batches of chars by font
 	glBindTexture(GL_TEXTURE_2D, font.texture);
 	glUseProgram(shader);
 
@@ -170,15 +184,31 @@ void TextRenderSystem::render() {
 	int project_loc = glGetUniformLocation(shader, "projection");
 	glUniformMatrix4fv(project_loc, 1, GL_FALSE, glm::value_ptr(camera->projection));
 
-	//Set up camera matrix
+	//Set up camera matrix uniform
 	int camera_loc = glGetUniformLocation(shader, "camera_view");
 	glUniformMatrix4fv(camera_loc, 1, GL_FALSE, glm::value_ptr(camera->camera_view));
+	
+	//Draw all sprites in the sprites
+	for (auto & entity : entities) {
 
-	//Set transform matrix
-	int transform_loc = glGetUniformLocation(shader, "transform");
-	glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f)));
+		TextComp* text = world->get_component<TextComp>(entity);
+		Transform* position = world->get_component<Transform>(entity);
 
-	//Bind the vertex array and draw the sprite
-	glBindVertexArray(this->VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		if(!text || !position){
+			printf("Missing component!\n");
+		}
+
+		if(!text->VAO_generated){
+			generate_VAO(text);
+			printf("VAO Generated!\n");
+		}
+
+		//Set transform matrix
+		int transform_loc = glGetUniformLocation(shader, "transform");
+		glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(position->transform));
+
+		//Bind the vertex array and draw the sprite
+		glBindVertexArray(text->VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
 }
