@@ -8,6 +8,7 @@ class Transform {
 
 		Transform();
 		Transform(float x, float y);
+		Transform(float x, float y, float scale);
 
 		//Should be changed out to be a mat3 at some point
 		glm::mat4 transform;

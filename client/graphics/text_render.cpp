@@ -51,7 +51,7 @@ FT_Face initialize_fonts(FT_Library lib){
 
 Font generate_font(FT_Library lib){
 
-    const int height = 250;
+    const int height = 64;
     FT_Face face = initialize_fonts(lib);
     FT_Set_Pixel_Sizes(face, 0, height);
 

@@ -198,8 +198,8 @@ int main() {
 	ptest2.add<Transform>(new Transform(0.f, 300.f));
 
 	EntityHandle text_test = world.create_entity();
-	text_test.add<TextComp>(new TextComp{std::string("live laugh cum"), 0, false});
-	text_test.add<Transform>(new Transform(0.f,0.f));
+	text_test.add<TextComp>(new TextComp{std::string("I got text rendering!"), 0, false});
+	text_test.add<Transform>(new Transform(0.f,150.f,1.f));
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;
