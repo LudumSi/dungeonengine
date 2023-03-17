@@ -119,37 +119,55 @@ TextRenderSystem::TextRenderSystem(World* world, Camera* camera): System(world) 
 
 void TextRenderSystem::generate_VAO(TextComp* comp){
 
-    //Start with a simple sprite of the first char
-    char c = comp->str[0];
-	std::cout << c << std::endl;
+    //Generate arrays
+	std::vector<float> vertices;
+	std::vector<int> indices;
 
-    //Get texture coordinates
-    Character glyph = font.characters[c];
-    glm::vec2 tex_coords = glyph.texture_coords;
-	float side_size = font.atlas->scanline_size;
-    glm::vec2 size = glm::vec2(glyph.size[0]/side_size,glyph.size[1]/side_size);
+	float advance = 0.f;
 
-	printf("Text coords: %f, %f. Size: %f, %f\n", tex_coords[0], tex_coords[1], tex_coords[0]+size[0], tex_coords[1]+size[1]);
+	for(int i = 0; i < comp->str.length(); i++){
+		
+		char c = comp->str[i];
 
-    //Quad
-	float vertices[] = {
-		// positions       // texture coords
-		0.f,                  0.f,                  0.f, tex_coords[0],         tex_coords[1]+size[1],   // top left
-		(float)glyph.size[0], 0.f,                  0.f, tex_coords[0]+size[0], tex_coords[1]+size[1],   // top right
-		(float)glyph.size[0], (float)glyph.size[1], 0.f, tex_coords[0]+size[0], tex_coords[1],           // bottom right
-		0.f,                  (float)glyph.size[1], 0.f, tex_coords[0],         tex_coords[1],           // Bottom left
-	};
+		//Get texture coordinates
+		Character glyph = font.characters[c];
+		glm::vec2 tex_coords = glyph.texture_coords;
+		float side_size = font.atlas->scanline_size;
+		glm::vec2 tex_size = glm::vec2(glyph.size[0]/side_size,glyph.size[1]/side_size);
+		glm::ivec2 bearing = glyph.bearing;
 
-	//Indices for triangles
-	unsigned int indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};
+		float origin_x = advance+(float)bearing[0];
+		float origin_y = (float)(glyph.size[1]-bearing[1]);
+		float offset_x = (float)glyph.size[0];
+		float offset_y = -1.f*(float)glyph.size[1];
 
+		//Quad generation
+		vertices.insert(vertices.end(),
+			{
+			// positions                                         // texture coords
+			origin_x,          origin_y,          0.f, tex_coords[0],             tex_coords[1],   // bottom left
+			origin_x+offset_x, origin_y,          0.f, tex_coords[0]+tex_size[0], tex_coords[1],   // bottom right
+			origin_x+offset_x, origin_y+offset_y, 0.f, tex_coords[0]+tex_size[0], tex_coords[1]+tex_size[1], // top right
+			origin_x,          origin_y+offset_y, 0.f, tex_coords[0],             tex_coords[1]+tex_size[1], // top left
+			}
+		);
+
+		advance += (float)glyph.advance/64.f;
+
+		//Indices for triangles
+		int vertex_offset = i*4;
+		indices.insert(indices.end(),
+			{
+			vertex_offset,   vertex_offset+1, vertex_offset+3, // first triangle
+			vertex_offset+1, vertex_offset+2, vertex_offset+3  // second triangle
+			}
+		);
+	}
+
+	//Generate VAO from the arrays
     unsigned int VBO;
 	glGenBuffers(1, &VBO);
 
-	//Will only be a static image without this being updated
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 
@@ -157,9 +175,9 @@ void TextRenderSystem::generate_VAO(TextComp* comp){
 
 	glBindVertexArray(comp->VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW);
 
 	//Set up the attribute pointers for the shaders
 	// X, Y, Z, S, T
@@ -194,13 +212,8 @@ void TextRenderSystem::render() {
 		TextComp* text = world->get_component<TextComp>(entity);
 		Transform* position = world->get_component<Transform>(entity);
 
-		if(!text || !position){
-			printf("Missing component!\n");
-		}
-
 		if(!text->VAO_generated){
 			generate_VAO(text);
-			printf("VAO Generated!\n");
 		}
 
 		//Set transform matrix
@@ -209,6 +222,6 @@ void TextRenderSystem::render() {
 
 		//Bind the vertex array and draw the sprite
 		glBindVertexArray(text->VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, text->str.length() * 6, GL_UNSIGNED_INT, 0);
 	}
 }
