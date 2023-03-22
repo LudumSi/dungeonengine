@@ -2,6 +2,10 @@
     "files.associations": {
         "mutex": "cpp",
         "thread": "cpp",
+        "typeinfo": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -22,13 +26,9 @@
         "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
-        "deque": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "string": "cpp",
         "unordered_map": "cpp",
-        "unordered_set": "cpp",
-        "vector": "cpp",
         "exception": "cpp",
         "algorithm": "cpp",
         "functional": "cpp",
@@ -58,8 +58,7 @@
         "stdexcept": "cpp",
         "stop_token": "cpp",
         "streambuf": "cpp",
-        "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "cinttypes": "cpp"
     },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {

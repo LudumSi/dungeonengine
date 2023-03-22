@@ -25,14 +25,15 @@ void Sprite::generate_VAO() {
 	//Set up a quad
 
 	float side_size = (float)atlas->resolution / (float)atlas->scanline_size;
+	float half_texel_offset = (1.f / (float)atlas->scanline_size) * 0.5f;
 
 	//Quad
 	float vertices[] = {
 		// positions        // texture coords
-		0.f, 0.f, 0.f,		tex_coords[0], tex_coords[1]+side_size,   // top left
-		100.f, 0.f, 0.f,    tex_coords[0]+side_size, tex_coords[1]+side_size,   // top right
-		100.f, 100.f, 0.f,  tex_coords[0]+side_size, tex_coords[1],   // bottom right
-		0.f, 100.f, 0.f,    tex_coords[0], tex_coords[1],   // Bottom left
+		-50.f, -50.f, 0.f,		tex_coords[0]+half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top left
+		50.f, -50.f, 0.f,    tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+side_size-half_texel_offset,   // top right
+		50.f, 50.f, 0.f,  tex_coords[0]+side_size-half_texel_offset, tex_coords[1]+half_texel_offset,   // bottom right
+		-50.f, 50.f, 0.f,    tex_coords[0]+half_texel_offset, tex_coords[1]+half_texel_offset,   // Bottom left
 	};
 
 	//Indices for triangles
