@@ -6,14 +6,14 @@
 
 #include "network/network_manager.h"
 
-std::mutex outbox_mutex;
-std::mutex inbox_mutex;
+//std::mutex outbox_mutex;
+//std::mutex inbox_mutex;
 
-std::queue<std::string> outbox;
-std::queue<std::string> inbox;
+//std::queue<std::string> outbox;
+//std::queue<std::string> inbox;
 
-std::vector<sockaddr_in*> client_list;
-
+//std::vector<sockaddr_in*> client_list;
+/* 
 void process_inbox() {
     std::string message;
     do {
@@ -103,7 +103,7 @@ void send_clients(SOCKET* server_socket, sockaddr_in* client) {
 	} while(message != "logout");
     
 }
-
+ */
 int main() {
 
     std::cout << "Starting Server" << std::endl;
@@ -115,6 +115,11 @@ int main() {
     int port = 7777;
     const char * ip = "192.168.254.11";
 
+    ConnectionManager c;
+    c.start(port, nullptr, 0);
+    c.run();
+
+    /* 
     if(winsock_init() > 0) {
         return EXIT_FAILURE;
     }
@@ -139,5 +144,6 @@ int main() {
     closesocket(server_socket);
 
     std::cout << "Complete" << std::endl;
-    return 0;
+    return 0; 
+    */
 }

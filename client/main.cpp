@@ -38,6 +38,7 @@ std::queue<std::string> inbox;
 
 using namespace std;
 
+/* 
 void process_inbox() {
     std::string message;
     do {
@@ -56,18 +57,7 @@ void process_inbox() {
     } while(message != "logout");
 }
 
-void process_outbox() {
-    std::string message;
-    do {
-        printf("Input CLIENT message: ");
-        getline(std::cin, message, '\n');
-        
-        outbox_mutex.lock();
-        outbox.push(message);
-        outbox_mutex.unlock();
 
-    } while(message != "logout");
-}
 
 void recv_clients(SOCKET* server_socket, sockaddr_in* client) {
 	std::string message;
@@ -127,7 +117,17 @@ void send_clients(SOCKET* server_socket, sockaddr_in* client) {
 	} while(message != "logout");
     
 }
+ */
 
+void process_outbox(ConnectionManager * manager) {
+    std::string message;
+    do {
+        printf("Input CLIENT message: ");
+        getline(std::cin, message, '\n');
+        manager->add_message(message, 0);
+
+    } while(message != "logout");
+}
 
 //GLFW error callback function
 void error_callback(int error, const char* description)
@@ -211,16 +211,14 @@ int main() {
     int port = 7777;
 	const char * ip = "192.168.254.11";
 
-    if(winsock_init() > 0) {
-        return EXIT_FAILURE;
-    }
 
-	set_server(&server_hints, &server_socket, port, ip);
-
-	//std::thread network_listener(recv_clients, &server_socket, &server_hints);
-    std::thread network_poster(send_clients, &server_socket, &server_hints);
-    std::thread inboxer(process_inbox); // Processes incoming data
-    std::thread outboxer(process_outbox); // Processes outgoing data. This belongs in the client
+    ConnectionManager c;
+	c.start(port, ip, 1);
+	c.add_message("Fuck you Preston", 0);
+	c.add_message("Eat my ass", 0);
+	c.add_message("close", 0);
+	c.add_message("logout", 0);
+	c.run();
 
 	//Initialize GLFW
 	if (!glfwInit())
@@ -349,9 +347,9 @@ int main() {
 	glfwTerminate();
 
 	//network_listener.join();
-    network_poster.join();
-    inboxer.join();
-    outboxer.join();
+    //network_poster.join();
+    //inboxer.join();
+    //outboxer.join();
 
 
 	return 0;
