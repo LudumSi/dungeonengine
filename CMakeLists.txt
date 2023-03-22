@@ -9,7 +9,6 @@ add_compile_options(
 
 add_executable(client 
 	client/main.cpp 
-	client/graphics/render.cpp
 	client/graphics/camera.cpp
 	client/graphics/render_helpers.cpp
 	client/graphics/sprite_render.cpp
@@ -30,7 +29,10 @@ add_executable(client
 
 add_executable(server 
 	server/main.cpp
-	common/ecs.cpp
+	common/ecs/entity.cpp
+	common/ecs/system.cpp
+	common/ecs/world.cpp
+	common/ecs/entityhandle.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
@@ -50,6 +52,7 @@ target_include_directories(client PRIVATE extern/freetype-2.12.1/include)
 
 target_include_directories(server PRIVATE include)
 target_include_directories(server PRIVATE common)
+target_include_directories(server PRIVATE common/ecs)
 target_include_directories(server PRIVATE client)
 target_include_directories(server PRIVATE extern)
 

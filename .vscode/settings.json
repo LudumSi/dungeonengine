@@ -58,7 +58,8 @@
         "stdexcept": "cpp",
         "stop_token": "cpp",
         "streambuf": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "queue": "cpp"
     },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {

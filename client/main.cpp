@@ -13,12 +13,14 @@
 
 #include "graphics/texture_atlas.h"
 #include "graphics/sprite.h"
-#include "graphics/render.h"
+#include "graphics/sprite_render.h"
 #include "physics.h"
 #include "playercontrol.h"
 #include "control.h"
-
+#include "graphics/text_render.h"
 #include "network/network_manager.h"
+
+#include "Client.h"
 #include <mutex>
 #include <thread>
 
@@ -30,104 +32,7 @@
 int win_width = 640;
 int win_height = 480;
 
-std::mutex outbox_mutex;
-std::mutex inbox_mutex;
-
-std::queue<std::string> outbox;
-std::queue<std::string> inbox;
-
 using namespace std;
-
-/* 
-void process_inbox() {
-    std::string message;
-    do {
-        message = "";
-        
-        inbox_mutex.lock();
-        
-        if(!inbox.empty()) {
-            message = inbox.front();
-            inbox.pop();
-            std::cout << message << std::endl;
-        }
-                
-        inbox_mutex.unlock();
-        
-    } while(message != "logout");
-}
-
-
-
-void recv_clients(SOCKET* server_socket, sockaddr_in* client) {
-	std::string message;
-	int client_length = 0;
-	char buf[1024];
-
-	do {
-		// Wait for messages from clients
-		client_length = sizeof(*client);
-		ZeroMemory(client, client_length);
-		
-		ZeroMemory(buf, 1024);
-
-		int bytes_in = recvfrom(*server_socket, buf, 1024, 0, (sockaddr*)client, &client_length);
-
-		if(bytes_in == SOCKET_ERROR) {
-			// Error bad
-			continue;
-		}
-
-		// WE SHOULD GET INFORMATION FROM THE CLIENT HERE
-		// can verify things like IP and specific ids
-		// Turn data into packeted info?
-
-		if(bytes_in > 0) {
-			message = buf;
-			std::cout << "Received data from someone" << std::endl;
-			inbox_mutex.lock();
-			inbox.push(buf);
-			inbox_mutex.unlock();
-		}
-	} while(message != "logout");
-}
-
-void send_clients(SOCKET* server_socket, sockaddr_in* client) {
-    //ZeroMemory(&client, client_length);
-    std::string message;
-    // Serialize data here?
-
-    // Send out data from outbox
-	do {
-		outbox_mutex.lock();
-		if(!outbox.empty()) {
-			message = outbox.front();
-			std::cout << "Sending " << message << " to someone" << std::endl;
-
-			int bytes_out = sendto(*server_socket, message.c_str(), message.length() + 1, 0, (sockaddr*)client, sizeof(*client));
-			if(bytes_out == SOCKET_ERROR) {
-				std::cout << "UHHHHHHHH" << std::endl;
-				outbox.pop();
-			} else {
-				std::cout << "CLIENT: Successful send" << std::endl;
-				outbox.pop();
-			}
-		}
-		outbox_mutex.unlock();
-	} while(message != "logout");
-    
-}
- */
-
-void process_outbox(ConnectionManager * manager) {
-    std::string message;
-    do {
-        printf("Input CLIENT message: ");
-        getline(std::cin, message, '\n');
-        manager->add_message(message, 0);
-
-    } while(message != "logout");
-}
 
 //GLFW error callback function
 void error_callback(int error, const char* description)
@@ -205,21 +110,6 @@ double get_time_ms() {
 
 int main() {
 
-	// Init Network Here
-    SOCKET server_socket;
-    sockaddr_in server_hints;
-    int port = 7777;
-	const char * ip = "192.168.254.11";
-
-
-    ConnectionManager c;
-	c.start(port, ip, 1);
-	c.add_message("Fuck you Preston", 0);
-	c.add_message("Eat my ass", 0);
-	c.add_message("close", 0);
-	c.add_message("logout", 0);
-	c.run();
-
 	//Initialize GLFW
 	if (!glfwInit())
 	{
@@ -255,52 +145,62 @@ int main() {
 
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 
+	//Set up camera
+	Camera* camera = new Camera(window);
+
+	//Set up sprite texture atlas
 	stbi_set_flip_vertically_on_load(true);
 	TextureAtlas atlas = TextureAtlas(256, 3, "assets/debug/daddy.png");
 	atlas.add_image("assets/debug/gradient.png");
 	atlas.add_image("assets/entities/wiz.png");
 
+	//Set up ECS
 	World world;
-	EntityManager emanager;
-	ComponentManager<Sprite> spritemanager;
-	ComponentManager<Transform> tmanager;
-	ComponentManager<PhysicsComp> physmanager;
-	ComponentManager<PlayerControl> controlmanager;
-	RenderSystem renderer = RenderSystem(window, &atlas, &spritemanager, &tmanager);
-	PhysicsSystem physics = PhysicsSystem(&tmanager, &physmanager);
-	ControlSystem control = ControlSystem(&actionqueue, &physmanager, &controlmanager);
+	
+	world.add_manager<Sprite>();
+	world.add_manager<Transform>();
+	world.add_manager<PhysicsComp>();
+	world.add_manager<PlayerControl>();
+	world.add_manager<TextComp>();
 
-	world.add_manager<Sprite>(&spritemanager);
-	world.add_manager<Transform>(&tmanager);
-	world.add_manager<PhysicsComp>(&physmanager);
-	world.add_manager<PlayerControl>(&controlmanager);
-	world.subscribe_system<Sprite>(&renderer);
+	SpriteRenderSystem renderer = SpriteRenderSystem(&world, camera, &atlas);
 	world.subscribe_system<Transform>(&renderer);
+	world.subscribe_system<Sprite>(&renderer);
+	
+	PhysicsSystem physics = PhysicsSystem(&world);
 	world.subscribe_system<Transform>(&physics);
 	world.subscribe_system<PhysicsComp>(&physics);
+	
+	ControlSystem control = ControlSystem(&world, &actionqueue, camera);
 	world.subscribe_system<PhysicsComp>(&control);
 	world.subscribe_system<PlayerControl>(&control);
+	world.subscribe_system<Transform>(&control);
+
+	TextRenderSystem textrender = TextRenderSystem(&world, camera);
+	world.subscribe_system<TextComp>(&textrender);
+	world.subscribe_system<Transform>(&textrender);
 
 	EntityHandle test = world.create_entity();
-	test.add<Sprite>(new Sprite(&atlas, "assets/entities/wiz.png"));
+	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
 	test.add<Transform>(new Transform(100.f,100.f));
 	test.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
-	test.add<PlayerControl>(new PlayerControl{ 20.f, 0.02f, glm::vec2(0.f,0.f) });
+	test.add<PlayerControl>(new PlayerControl{ 50.f, 0.2f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();
-	ptest.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
+	ptest.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
 	ptest.add<Transform>(new Transform(0.f, 0.f));
-	ptest.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.1f,0.0f) });
 
 	EntityHandle ptest1 = world.create_entity();
-	ptest1.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
-	ptest1.add<Transform>(new Transform(0.f, 0.f));
-	ptest1.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.0f),glm::vec2(0.1f,0.1f) });
+	ptest1.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
+	ptest1.add<Transform>(new Transform(300.f, 0.f));
 
 	EntityHandle ptest2 = world.create_entity();
-	ptest2.add<Sprite>(new Sprite(&atlas, "assets/fart/wiz.png"));
-	ptest2.add<Transform>(new Transform(0.f, 0.f));
-	ptest2.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.f,5.f),glm::vec2(0.0f,0.0f) });
+	ptest2.add<Sprite>(new Sprite(&atlas, "FUCK"));
+	ptest2.add<Transform>(new Transform(0.f, 300.f));
+
+	EntityHandle text_test = world.create_entity();
+	text_test.add<TextComp>(new TextComp{std::string("I got text rendering!"), 0, false});
+	text_test.add<Transform>(new Transform(0.f,150.f,1.f));
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;
@@ -333,8 +233,8 @@ int main() {
 
 		//Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		renderer.render();
+		textrender.render();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -345,12 +245,6 @@ int main() {
 
 	//Shut down GLFW
 	glfwTerminate();
-
-	//network_listener.join();
-    //network_poster.join();
-    //inboxer.join();
-    //outboxer.join();
-
 
 	return 0;
 }
