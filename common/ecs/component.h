@@ -6,11 +6,22 @@
 
 #include "entity.h"
 
+typedef unsigned int CompID;
+
 //Base component class for components to inherit from
-class Component;
+class Component {
+
+	private:
+		CompID generate_comp_id();
+
+	public:
+		CompID comp_id;
+		Component();
+};
 
 //Component base class
 class CompManagerBase {
+
 	public:
 		virtual void remove_component(Entity)=0;
 		virtual bool has_component(Entity)=0;

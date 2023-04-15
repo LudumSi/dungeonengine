@@ -21,6 +21,7 @@ add_executable(client
 	common/ecs/system.cpp
 	common/ecs/world.cpp
 	common/ecs/entityhandle.cpp
+	common/ecs/component.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
