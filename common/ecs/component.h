@@ -42,7 +42,7 @@ class ComponentManager: public CompManagerBase {
 
 	public:
 		//Add a component to an entity
-		void add_component(Entity, CompType*);
+		void add_component(Entity, CompType);
 		//Remove a component from an entity
 		void remove_component(Entity);
 		//Check to see if an entity has a component
@@ -52,14 +52,14 @@ class ComponentManager: public CompManagerBase {
 
 		//Actual vector of components
 		//Look into returning an iterator on this
-		std::vector<CompType*> components;
+		std::vector<CompType> components;
 };
 
 //C++ Templates don't seem to get along with .cpp files
 
 //Component manager class
 template <class CompType>
-void ComponentManager<CompType>::add_component(Entity e, CompType* c) {
+void ComponentManager<CompType>::add_component(Entity e, CompType c) {
 
 	//Map entity to new index
 	entity_to_comp[e] = components.size();
@@ -76,7 +76,7 @@ void ComponentManager<CompType>::remove_component(Entity e) {
 	int len = components.size() - 1;
 
 	//In order to keep things packed in, swap with the last component in the vector
-	CompType* comp = components[len];
+	CompType comp = components[len];
 	components[idx] = comp;
 	components.pop_back();
 
@@ -101,7 +101,7 @@ template <class CompType>
 CompType* ComponentManager<CompType>::get_component(Entity e) {
 
 	if (this->has_component(e)) {
-		return components[entity_to_comp[e]];
+		return &components[entity_to_comp[e]];
 	}
 	else {
 		return NULL;

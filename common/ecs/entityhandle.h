@@ -16,7 +16,7 @@ public:
 	};
 
 	template <typename CompType>
-	void add(CompType* c) {
+	void add(CompType c) {
 		world->add_component<CompType>(entity, c);
 	}
 

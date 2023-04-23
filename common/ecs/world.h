@@ -33,7 +33,7 @@ class World {
 		//Add a component to an entity
 		//Also updates systems entity lists
 		template <typename CompType>
-		void add_component(Entity e, CompType* comp) {
+		void add_component(Entity e, CompType comp) {
 			
 			//Actually add the component to the entity
 			ComponentManager<CompType>* manager = get_manager<CompType>();
