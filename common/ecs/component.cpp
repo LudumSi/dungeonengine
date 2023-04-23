@@ -1,19 +1,9 @@
 #include "component.h"
 
-CompID Component::generate_comp_id(){
-	static CompID comp_id_idx;
-	static bool idx_initialized = false;
+CompID generate_comp_id(){
+	static CompID next_id = 0;
 
-	if(!idx_initialized){
-		comp_id_idx = 0;
-		idx_initialized = true;
-	}
+	next_id++;
 
-	comp_id_idx++;
-
-	return comp_id_idx;
-}
-
-Component::Component(){
-	this->comp_id = this->generate_comp_id();
+	return next_id;
 }

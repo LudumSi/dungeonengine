@@ -8,16 +8,20 @@
 
 typedef unsigned int CompID;
 
-//Base component class for components to inherit from
-class Component {
+CompID generate_comp_id();
 
-	private:
-		CompID generate_comp_id();
+template <class CompType> 
+CompID get_comp_id(){
+	static bool initialized = false;
+	static CompID id;
 
-	public:
-		CompID comp_id;
-		Component();
-};
+	if(!initialized){
+		id = generate_comp_id();
+		initialized = true;
+	}
+
+	return id;
+}
 
 //Component base class
 class CompManagerBase {

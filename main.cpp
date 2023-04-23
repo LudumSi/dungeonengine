@@ -155,7 +155,6 @@ int main() {
 
 	//Set up ECS
 	World world;
-	
 	world.add_manager<Sprite>();
 	world.add_manager<Transform>();
 	world.add_manager<PhysicsComp>();

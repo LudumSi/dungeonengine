@@ -20,7 +20,7 @@ class World {
 		void delete_entity(Entity e) {
 
 			//Remove the entity and all its components from all component managers
-			for (std::map<const char*, CompManagerBase*>::iterator it = managers.begin(); it != managers.end(); ++it) {
+			for (std::map<CompID, CompManagerBase*>::iterator it = managers.begin(); it != managers.end(); ++it) {
 				it->second->remove_component(e);
 			}
 
@@ -88,7 +88,7 @@ class World {
 		template <typename CompType>
 		void add_manager() {
 			ComponentManager<CompType>* man = new ComponentManager<CompType>;
-			const char* id = typeid(CompType).name();
+			CompID id = get_comp_id<CompType>();
 			managers[id] = (CompManagerBase*)man;
 		}
 
@@ -127,10 +127,10 @@ class World {
 				add_system(sys);
 			}
 
-			const char* comp_id = get_manager_id<CompType>();
+			CompID comp_id = get_manager_id<CompType>();
 
-			comp_type_to_system.insert(std::pair<const char*, System*>(comp_id,sys));
-			system_to_comp_type.insert(std::pair<System*, const char*>(sys, comp_id));
+			comp_type_to_system.insert(std::pair<CompID, System*>(comp_id,sys));
+			system_to_comp_type.insert(std::pair<System*, CompID>(sys, comp_id));
 		}
 		
 		//Add a system
@@ -142,9 +142,9 @@ class World {
 
 		//Check to ensure that the given type exists in the managers array
 		template <typename CompType>
-		const char* get_manager_id() {
+		CompID get_manager_id() {
 
-			const char* id = typeid(CompType).name();
+			CompID id = get_comp_id<CompType>();
 			
 			if (managers.count(id)) {
 				return id;
@@ -156,7 +156,7 @@ class World {
 		}
 
 		//Sees if the entity has the given component
-		bool has_component_by_id(Entity e, const char* id) {
+		bool has_component_by_id(Entity e, CompID id) {
 			CompManagerBase* manager = managers[id];
 			return manager->has_component(e);
 		}
@@ -183,13 +183,13 @@ class World {
 		EntityManager e_manager;
 
 		//Map of component ids to component managers
-		std::map<const char*,CompManagerBase*> managers;
+		std::map<CompID,CompManagerBase*> managers;
 
 		//Vector of systems
 		std::vector<System*> systems;
 
 		//Map of manager pointers to vectors of indices of systems which need to be updated
-		std::unordered_multimap<const char*, System*> comp_type_to_system;
-		std::unordered_multimap<System*, const char*> system_to_comp_type;
+		std::unordered_multimap<CompID, System*> comp_type_to_system;
+		std::unordered_multimap<System*, CompID> system_to_comp_type;
 		
 };
