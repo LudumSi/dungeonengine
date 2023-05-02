@@ -138,6 +138,17 @@ class World {
 			systems.push_back(sys);
 		}
 
+		//Adds a component from raw data
+		void add_component_raw(Entity e, CompID id, void* data){
+			CompManagerBase* manager = managers[id];
+
+			if(manager){
+				manager->add_component_raw(e, data);
+			}else{
+				std::cerr << "Failed to add raw comp with id " << id << std::endl; 
+			}
+		}
+
 	private:
 
 		//Check to ensure that the given type exists in the managers array

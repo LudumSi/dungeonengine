@@ -192,8 +192,14 @@ int main() {
 	ptest1.add<Sprite>(Sprite(&atlas, "debug/gradient"));
 	ptest1.add<Transform>(Transform(300.f, 0.f));
 
+	EntityHandle ptest3 = world.create_entity();
+	Sprite test_sprite = Sprite(&atlas, "FUCK");
+	void* test_pointer = &test_sprite;
+	ptest3.add_raw(get_comp_id<Sprite>(), test_pointer);
+	ptest3.add<Transform>(Transform(300.f, 300.f));
+
 	EntityHandle ptest2 = world.create_entity();
-	ptest2.add<Sprite>(Sprite(&atlas, "FUCK"));
+	ptest2.add_raw(get_comp_id<Sprite>(), test_pointer);
 	ptest2.add<Transform>(Transform(0.f, 300.f));
 
 	EntityHandle text_test = world.create_entity();
