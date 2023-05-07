@@ -3,10 +3,10 @@
 #include <map>
 #include <vector>
 #include <cstddef>
-
+#include <cstdint>
 #include "entity.h"
 
-typedef unsigned int CompID;
+typedef uint64_t CompID;
 
 CompID generate_comp_id();
 
@@ -30,6 +30,7 @@ class CompManagerBase {
 		virtual void remove_component(Entity)=0;
 		virtual bool has_component(Entity)=0;
 		virtual void add_component_raw(Entity, void*)=0;
+		virtual char* get_component_raw(Entity)=0;
 };
 
 template <class CompType>
@@ -51,7 +52,9 @@ class ComponentManager: public CompManagerBase {
 		//Get a pointer to a component
 		CompType* get_component(Entity);
 		//Add a component from raw data
-		void add_component_raw(Entity, void*);
+		void add_component_raw(Entity, void*) override;
+		//Get raw data of a component
+		char* get_component_raw(Entity) override; 
 
 		//Actual vector of components
 		//Look into returning an iterator on this
@@ -129,3 +132,9 @@ void ComponentManager<CompType>::add_component_raw(Entity e, void* data){
 	add_component(e, new_comp);
 }
 
+template <class CompType>
+char* ComponentManager<CompType>::get_component_raw(Entity e){
+
+	CompType* comp = get_component(e);
+	return (char*)comp;
+}

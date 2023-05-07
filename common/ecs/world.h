@@ -84,6 +84,13 @@ class World {
 			return manager->get_component(e);
 		}
 
+		//Returns a pointer to a component for a given entity by id
+		char* get_component_raw(Entity e, CompID id){
+			
+			CompManagerBase* manager = managers[id];
+			return manager->get_component_raw(e);
+		}
+
 		//Add a component manager
 		template <typename CompType>
 		void add_manager() {
@@ -202,5 +209,4 @@ class World {
 		//Map of manager pointers to vectors of indices of systems which need to be updated
 		std::unordered_multimap<CompID, System*> comp_type_to_system;
 		std::unordered_multimap<System*, CompID> system_to_comp_type;
-		
 };

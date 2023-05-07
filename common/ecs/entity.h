@@ -1,7 +1,8 @@
 #pragma once
+#include <cstdint>
 
 //Entity. Literally just an id.
-typedef unsigned int Entity;
+typedef uint64_t Entity;
 
 //Entity manager. Ensures that each entity has a unique id
 //TODO: System for re-using ids?
