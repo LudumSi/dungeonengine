@@ -21,6 +21,8 @@ int run(connection * conn) {
 	return 0;
 }
 
+
+
 int update(connection * conn) {
 	char buf[MAX_PACK_BYTES];
     // Send out data from outbox
@@ -52,6 +54,11 @@ ConnectionManager::ConnectionManager() {
 
 ConnectionManager::~ConnectionManager() {
 	return;
+}
+
+
+char * ConnectionManager::serialize_component(Entity entity_id, CompID component_id) {
+	return nullptr;
 }
 
 void ConnectionManager::add_message(std::string message, char uid) {

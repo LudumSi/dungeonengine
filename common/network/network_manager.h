@@ -9,6 +9,10 @@
 #include <queue>
 #include <mutex>
 
+#include <entity.h>
+#include <component.h>
+#include <world.h>
+
 //#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define MAX_PACK_BYTES 1024
@@ -48,6 +52,7 @@ int run(connection*);
 int update(connection*);
 connection * create_connection(sockaddr_in, SOCKET *, const char);
 
+
 class ConnectionManager {
 private:
 	std::vector<connection*> connections;
@@ -58,6 +63,10 @@ private:
 	const char* ip;
 	int port;
 	char uid;
+	World * world;
+
+	char * serialize_component(Entity, CompID);
+	char * serialize_entity(Entity);
 
 	int winsock_init();
 	int bind_listener();
