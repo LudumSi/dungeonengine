@@ -1,6 +1,7 @@
 
 #include "sprite.h"
 #include "glad\glad.h"
+#include <iostream>
 
 Sprite::Sprite(TextureAtlas* atlas, const char* texture) {
 
@@ -15,7 +16,7 @@ Sprite::Sprite(TextureAtlas* atlas, const char* texture) {
 Sprite::Sprite(const Sprite& old_sprite) {
 
 	this->atlas = old_sprite.atlas;
-	this->tex_coords = glm::vec2(0,0);
+	this->tex_coords = old_sprite.tex_coords;
 	
 	generate_VAO();
 }

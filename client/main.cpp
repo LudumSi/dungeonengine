@@ -156,7 +156,6 @@ int main() {
 
 	//Set up ECS
 	World world;
-	
 	world.add_manager<Sprite>();
 	world.add_manager<Transform>();
 	world.add_manager<PhysicsComp>();
@@ -181,26 +180,32 @@ int main() {
 	world.subscribe_system<Transform>(&textrender);
 
 	EntityHandle test = world.create_entity();
-	test.add<Sprite>(new Sprite(&atlas, "entities/wiz"));
-	test.add<Transform>(new Transform(100.f,100.f));
-	test.add<PhysicsComp>(new PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
-	test.add<PlayerControl>(new PlayerControl{ 50.f, 0.2f, glm::vec2(0.f,0.f) });
+	test.add<Sprite>(Sprite(&atlas, "entities/wiz"));
+	test.add<Transform>(Transform(100.f,100.f));
+	test.add<PhysicsComp>(PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
+	test.add<PlayerControl>(PlayerControl{ 50.f, 0.2f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();
-	ptest.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
-	ptest.add<Transform>(new Transform(0.f, 0.f));
+	ptest.add<Sprite>(Sprite(&atlas, "debug/gradient"));
+	ptest.add<Transform>(Transform(0.f, 0.f));
 
 	EntityHandle ptest1 = world.create_entity();
-	ptest1.add<Sprite>(new Sprite(&atlas, "debug/gradient"));
-	ptest1.add<Transform>(new Transform(300.f, 0.f));
+	ptest1.add<Sprite>(Sprite(&atlas, "debug/gradient"));
+	ptest1.add<Transform>(Transform(300.f, 0.f));
+
+	EntityHandle ptest3 = world.create_entity();
+	Sprite test_sprite = Sprite(&atlas, "FUCK");
+	void* test_pointer = &test_sprite;
+	ptest3.add_raw(get_comp_id<Sprite>(), test_pointer);
+	ptest3.add<Transform>(Transform(300.f, 300.f));
 
 	EntityHandle ptest2 = world.create_entity();
-	ptest2.add<Sprite>(new Sprite(&atlas, "FUCK"));
-	ptest2.add<Transform>(new Transform(0.f, 300.f));
+	ptest2.add_raw(get_comp_id<Sprite>(), test_pointer);
+	ptest2.add<Transform>(Transform(0.f, 300.f));
 
 	EntityHandle text_test = world.create_entity();
-	text_test.add<TextComp>(new TextComp{std::string("I got text rendering!"), 0, false});
-	text_test.add<Transform>(new Transform(0.f,150.f,1.f));
+	text_test.add<TextComp>(TextComp{std::string("I got text rendering!"), 0, false});
+	text_test.add<Transform>(Transform(0.f,150.f,1.f));
 
 	double t = 0.0;
 	double dt = 1.0 / 60.0;
