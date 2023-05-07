@@ -102,38 +102,35 @@ int ConnectionManager::run() {
 	char buf[MAX_PACK_BYTES];
 	int addr_len = 0;
 
-	do {
+	ZeroMemory(&addr, addr_len);
+	addr_len = sizeof(addr);
 
-		ZeroMemory(&addr, addr_len);
-		addr_len = sizeof(addr);
+	ZeroMemory(&buf, MAX_PACK_BYTES);
 
-		ZeroMemory(&buf, MAX_PACK_BYTES);
+	int bytes_in = recvfrom(sock, buf, MAX_PACK_BYTES, 0, (sockaddr*)&addr, &addr_len);
 
-		int bytes_in = recvfrom(sock, buf, MAX_PACK_BYTES, 0, (sockaddr*)&addr, &addr_len);
+	if(bytes_in == SOCKET_ERROR) {
+		std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
+		return SOCKET_ERROR;
+	}
+	// TODO: Decode more complex packets
+	bool new_client = true;
+	char ip[256];
+	inet_ntop(AF_INET, &addr.sin_addr, ip, 256);
 
-		if(bytes_in == SOCKET_ERROR) {
-			std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
-			return SOCKET_ERROR;
+	for(auto conn : connections) {
+		if(buf[0] == conn->uid) {
+			new_client = false;
+			break;
 		}
-		// TODO: Decode more complex packets
-		bool new_client = true;
-		char ip[256];
-		inet_ntop(AF_INET, &addr.sin_addr, ip, 256);
+	}
 
-		for(auto conn : connections) {
-			if(buf[0] == conn->uid) {
-				new_client = false;
-				break;
-			}
-		}
+	if(new_client && connections.size() <= MAX_CLIENTS) {
+		std::cout << "New client connection from " << ip << " with uid: " << int(buf[0]) << std::endl;
+		connections.push_back(create_connection(addr, &sock, buf[0]));
+	}
 
-		if(new_client && connections.size() <= MAX_CLIENTS) {
-			std::cout << "New client connection from " << ip << " with uid: " << int(buf[0]) << std::endl;
-			connections.push_back(create_connection(addr, &sock, buf[0]));
-		}
-
-		std::cout << "Received data: " << buf + 1 << std::endl;
-	} while (strcmp(buf + 1, "close"));
+	std::cout << "Received data: " << buf + 1 << std::endl;
 
 	for(auto conn : connections) {
 		conn->tx->join();
