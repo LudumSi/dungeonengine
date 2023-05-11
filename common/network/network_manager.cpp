@@ -1,5 +1,5 @@
 
-#include "network_manager.h"
+#include <network/network_manager.h>
 
 connection * create_connection(sockaddr_in addr, SOCKET * sock, const char uid) {
 	connection * conn = new connection;
@@ -57,10 +57,6 @@ ConnectionManager::~ConnectionManager() {
 }
 
 
-char * ConnectionManager::serialize_component(Entity entity_id, CompID component_id) {
-	return nullptr;
-}
-
 void ConnectionManager::add_message(std::string message, char uid) {
 	for(auto conn : connections) {
 		if(uid == 0 || conn->uid == uid) {
@@ -88,10 +84,13 @@ int ConnectionManager::start(int port, const char* ip, char uid) {
 	}
 
 	if(ip) {
-		char buf[MAX_PACK_BYTES];
-		buf[0] = uid;
-		buf[1] = '\0';
-		strcat(buf, "Hello");
+		Packet p;
+		ClientConnect command;
+		command.set_id(this->uid);
+		command.set_user("Jim");
+		p.set_allocated_client_connect(&command);
+		
+		const char * buf = Packet().SerializeAsString().c_str();
 
 		int bytes_out = sendto(sock, buf, strlen(buf) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 		connections.push_back(create_connection(addr, &sock, 0));
@@ -115,26 +114,20 @@ int ConnectionManager::run() {
 	ZeroMemory(&buf, MAX_PACK_BYTES);
 
 	int bytes_in = recvfrom(sock, buf, MAX_PACK_BYTES, 0, (sockaddr*)&addr, &addr_len);
+	Packet pack;
+	pack.ParseFromArray(buf, strlen(buf));
 
 	if(bytes_in == SOCKET_ERROR) {
 		std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
 		return SOCKET_ERROR;
 	}
 	// TODO: Decode more complex packets
-	bool new_client = true;
 	char ip[256];
 	inet_ntop(AF_INET, &addr.sin_addr, ip, 256);
 
-	for(auto conn : connections) {
-		if(buf[0] == conn->uid) {
-			new_client = false;
-			break;
-		}
-	}
-
-	if(new_client && connections.size() <= MAX_CLIENTS) {
-		std::cout << "New client connection from " << ip << " with uid: " << int(buf[0]) << std::endl;
-		connections.push_back(create_connection(addr, &sock, buf[0]));
+	if (pack.has_client_connect() && connections.size() <= MAX_CLIENTS) {
+		std::cout << "New client connection from " << ip << " with uid: " << pack.client_connect().id() << std::endl;
+		connections.push_back(create_connection(addr, &sock, pack.client_connect().id()));
 	}
 
 	std::cout << "Received data: " << buf + 1 << std::endl;

@@ -13,6 +13,8 @@
 #include <component.h>
 #include <world.h>
 
+#include <network/components.pb.h>
+
 //#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define MAX_PACK_BYTES 1024
@@ -64,9 +66,6 @@ private:
 	int port;
 	char uid;
 	World * world;
-
-	char * serialize_component(Entity, CompID);
-	char * serialize_entity(Entity);
 
 	int winsock_init();
 	int bind_listener();
