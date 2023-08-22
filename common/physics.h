@@ -1,12 +1,25 @@
 #pragma once
 
 #include "ecs.h"
-#include "transform.h"
+#include "glm/glm.hpp"
+
+struct PhysicsComp {
+	glm::vec2 velocity;
+	glm::vec2 acceleration;
+};
+
+struct MoveEntityEvent: public Event{
+	MoveEntityEvent(Entity target, glm::vec2 delta): target{target}, delta{delta}{};
+	Entity target;
+	glm::vec2 delta;
+};
 
 class PhysicsSystem : public System {
 
 	public:
 
-		PhysicsSystem(World* world): System(world){};
+		PhysicsSystem(World* world);
 		void update(float delta);
+
+		void move_entity(MoveEntityEvent*);
 };

@@ -15,6 +15,8 @@ class ControlSystem : public System {
 		int left;
 		int up;
 
+		glm::vec2 player_velocity;
+
 	public:
 
 		ControlSystem(World* world, std::queue<MoveCommand>* actions, Camera* camera);

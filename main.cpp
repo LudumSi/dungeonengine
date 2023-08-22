@@ -171,7 +171,6 @@ int main() {
 	
 	ControlSystem control = ControlSystem(&world, &actionqueue, camera);
 	world.subscribe_system<PhysicsComp>(&control);
-	world.subscribe_system<PlayerControl>(&control);
 	world.subscribe_system<Transform>(&control);
 
 	TextRenderSystem textrender = TextRenderSystem(&world, camera);
@@ -181,7 +180,7 @@ int main() {
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(Sprite(&atlas, "entities/wiz"));
 	test.add<Transform>(Transform(100.f,100.f));
-	test.add<PhysicsComp>(PhysicsComp{glm::vec2(0.0f,0.f),glm::vec2(0.0f,0.0f) });
+	test.add<PhysicsComp>(PhysicsComp{glm::vec2(0.f,0.f),glm::vec2(0.0f,0.0f) });
 	test.add<PlayerControl>(PlayerControl{ 50.f, 0.2f, glm::vec2(0.f,0.f) });
 
 	EntityHandle ptest = world.create_entity();

@@ -7,11 +7,16 @@
 #include "entity.h"
 #include "component.h"
 #include "system.h"
+#include "event.h"
 
 class EntityHandle;
 class World {
 
 	public:
+
+		//Event handler for system events
+		EventPasser event_passer;
+
 		//Create an entity handle
 		EntityHandle create_entity();
 
