@@ -29,8 +29,6 @@ class CompManagerBase {
 	public:
 		virtual void remove_component(Entity)=0;
 		virtual bool has_component(Entity)=0;
-		virtual void add_component_raw(Entity, void*)=0;
-		virtual char* get_component_raw(Entity)=0;
 };
 
 template <class CompType>
@@ -51,10 +49,6 @@ class ComponentManager: public CompManagerBase {
 		bool has_component(Entity);
 		//Get a pointer to a component
 		CompType* get_component(Entity);
-		//Add a component from raw data
-		void add_component_raw(Entity, void*) override;
-		//Get raw data of a component
-		char* get_component_raw(Entity) override; 
 
 		//Actual vector of components
 		//Look into returning an iterator on this
@@ -112,29 +106,4 @@ CompType* ComponentManager<CompType>::get_component(Entity e) {
 	else {
 		return NULL;
 	}
-}
-
-//Returns true if the component can be added, otherwise returns false
-//Better be damn sure what you're putting in is this component
-//Intended to be used for networking only
-template <class CompType>
-void ComponentManager<CompType>::add_component_raw(Entity e, void* data){
-
-	CompType* cast_data = (CompType*)data;
-
-	//Null pointer check
-	if(!cast_data) return;
-
-	CompType new_comp = *cast_data;
-
-	//Some kind of check or exception should be made here to ensure the data is good
-
-	add_component(e, new_comp);
-}
-
-template <class CompType>
-char* ComponentManager<CompType>::get_component_raw(Entity e){
-
-	CompType* comp = get_component(e);
-	return (char*)comp;
 }

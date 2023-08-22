@@ -84,13 +84,6 @@ class World {
 			return manager->get_component(e);
 		}
 
-		//Returns a pointer to a component for a given entity by id
-		char* get_component_raw(Entity e, CompID id){
-			
-			CompManagerBase* manager = managers[id];
-			return manager->get_component_raw(e);
-		}
-
 		//Add a component manager
 		template <typename CompType>
 		void add_manager() {
@@ -143,17 +136,6 @@ class World {
 		//Add a system
 		void add_system(System* sys) {
 			systems.push_back(sys);
-		}
-
-		//Adds a component from raw data
-		void add_component_raw(Entity e, CompID id, void* data){
-			CompManagerBase* manager = managers[id];
-
-			if(manager){
-				manager->add_component_raw(e, data);
-			}else{
-				std::cerr << "Failed to add raw comp with id " << id << std::endl; 
-			}
 		}
 
 	private:

@@ -64,5 +64,10 @@
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {
         "CMAKE_MAKE_PROGRAM": "C:/msys64/usr/bin/make.exe"
-    }
+    },
+    "cmake.configureArgs": [
+        "-Dprotobuf_ABSL_PROVIDER=module",
+        "-DCMAKE_PREFIX_PATH=/extern/protobuff/third_party/abseil-cpp",
+        "-Dprotobuf_BUILD_TESTS=OFF"
+    ],
 }

@@ -34,8 +34,4 @@ public:
 	CompType* get() {
 		return world->get_component<CompType>(entity);
 	}
-
-	void add_raw(CompID id, void* data) {
-		world->add_component_raw(entity, id, data);
-	}
 };
