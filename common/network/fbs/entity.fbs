@@ -1,4 +1,4 @@
-namespace EntityBuffer;
+namespace DungeonEngine.EntityBuffer;
 
 struct Vec3 {
     x:float;
@@ -6,7 +6,9 @@ struct Vec3 {
     z:float;
 }
 
-table Sample {
-    pos:Vec3;
-    name:string;
+table ConnectionCommand {
+    userid:string;
+    username:string;
 }
+
+root_type ConnectionCommand;

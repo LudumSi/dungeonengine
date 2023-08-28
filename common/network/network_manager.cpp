@@ -83,8 +83,25 @@ int ConnectionManager::start(int port, const char* ip, char uid) {
 
 	if(ip) {
 		// Send client info here
-		char buf[MAX_PACK_BYTES];
-		int bytes_out = sendto(sock, buf, strlen(buf) + 1, 0, (sockaddr*)&addr, sizeof(addr));
+		std::cout << "Sending connection request to server" << std::endl;
+
+		flatbuffers::FlatBufferBuilder builder(1024);
+		auto name = builder.CreateString("Jimgrind");
+		auto id = builder.CreateString("12345");
+		
+		auto cmd = DungeonEngine::EntityBuffer::CreateConnectionCommand(builder, id, name);
+
+		std::cout << "Serialized Buffer" << std::endl;
+
+		builder.Finish(cmd);
+
+		uint8_t *binary_buf = builder.GetBufferPointer();
+		int size = builder.GetSize();
+		char * buf = new char[size + 1];
+		memcpy(buf, binary_buf, size);
+		buf[size] = 0; // null termination
+
+		int bytes_out = sendto(sock, buf, size + 1, 0, (sockaddr*)&addr, sizeof(addr));
 		connections.push_back(create_connection(addr, &sock, 0));
 
 		if (bytes_out == SOCKET_ERROR) {
@@ -93,10 +110,12 @@ int ConnectionManager::start(int port, const char* ip, char uid) {
 		}
 	}
 
+	std::cout << "Completed connection setup" << std::endl;
 	return 0;
 }
 
 int ConnectionManager::run() {
+	std::cout << "Running main update" << std::endl;
 	char buf[MAX_PACK_BYTES];
 	int addr_len = 0;
 
@@ -110,18 +129,30 @@ int ConnectionManager::run() {
 	if(bytes_in == SOCKET_ERROR) {
 		std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
 		return SOCKET_ERROR;
+	} else{
+		std::cout << "Received data: " << bytes_in << std::endl;
 	}
 	// TODO: Decode more complex packets
+	uint8_t* binary_buf;
+	memcpy(binary_buf, buf, bytes_in);
+	auto received_packet = DungeonEngine::EntityBuffer::GetConnectionCommand((uint8_t*) buf);
+
+	std::cout << "Decoded packet" << std::endl;
+	
 	char ip[256];
 	inet_ntop(AF_INET, &addr.sin_addr, ip, 256);
-
+	std::cout << "New client connection from " << ip << " with uid: " << received_packet->userid()->str() << " and name " << received_packet->username()->str() << std::endl;
+	/*
 	if (connections.size() <= MAX_CLIENTS) {
-		std::cout << "New client connection from " << ip << " with uid: " << std::endl;
+		std::cout << "New client connection from " << ip << " with uid: " << received_packet->userid() << " and name " << received_packet->username() << std::endl;
 		connections.push_back(create_connection(addr, &sock, buf[0]));
 	}
+	*/
 
-	std::cout << "Received data: " << buf + 1 << std::endl;
+	return 0;
+}
 
+int ConnectionManager::close() {
 	for(auto conn : connections) {
 		conn->tx->join();
 	}

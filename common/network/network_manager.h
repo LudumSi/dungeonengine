@@ -76,6 +76,7 @@ public:
 
 	int start(int, const char*, char);
 	int run();
+	int close();
 	void add_message(std::string, char);
 	
 };

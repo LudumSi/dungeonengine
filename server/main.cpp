@@ -3,7 +3,7 @@
 #include <queue>
 #include <iostream>
 #include <cstring>
-
+#include <unistd.h>
 #include "network/network_manager.h"
 
 //std::mutex outbox_mutex;
@@ -117,7 +117,10 @@ int main() {
 
     ConnectionManager c;
     c.start(port, nullptr, 0);
-    c.run();
+    while(1) {
+        c.run();
+        sleep(1);
+    }
 
     /* 
     if(winsock_init() > 0) {

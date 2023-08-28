@@ -212,6 +212,11 @@ int main() {
 	double current_time = get_time_ms();
 	double accumulator = 0.0;
 
+	int port = 7777;
+    const char * ip = "192.168.254.11";
+	ConnectionManager c;
+    c.start(port, ip, 0);
+
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{

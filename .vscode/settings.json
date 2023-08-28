@@ -69,7 +69,15 @@
         "format": "cpp",
         "scoped_allocator": "cpp",
         "span": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cfenv": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "csignal": "cpp",
+        "regex": "cpp",
+        "future": "cpp",
+        "typeindex": "cpp",
+        "valarray": "cpp"
     },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {
