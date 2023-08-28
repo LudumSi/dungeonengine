@@ -12,8 +12,7 @@
 #include <entity.h>
 #include <component.h>
 #include <world.h>
-
-#include <network/components.pb.h>
+#include <network/fbs/entity_generated.h>
 
 //#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
@@ -28,7 +27,7 @@
  */
 
 // Add more command ids here in the future
-enum commands {
+enum commands {\
 	CONNECT = 0,
 	DISCONNECT,
 	MESSAGE,

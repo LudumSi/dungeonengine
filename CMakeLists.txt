@@ -60,14 +60,16 @@ target_include_directories(server PRIVATE client)
 #target_include_directories(server PRIVATE extern/protobuf/src)
 #target_include_directories(client PRIVATE extern/protobuf/third_party/abseil-cpp)
 
+# Set up flatbuffers
+add_subdirectory(extern/flatbuffers ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-build EXCLUDE_FROM_ALL)
+
 target_link_libraries(client "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 
 install(TARGETS client DESTINATION "./")
 install(TARGETS server DESTINATION "./")
 
 add_subdirectory(extern/freetype-2.12.1)
-add_subdirectory(extern/protobuf)
 
 target_link_libraries(client freetype)
-target_link_libraries(client libprotobuf)
-target_link_libraries(server libprotobuf)
+target_link_libraries(client flatbuffers)
+target_link_libraries(server flatbuffers)

@@ -21,8 +21,6 @@ int run(connection * conn) {
 	return 0;
 }
 
-
-
 int update(connection * conn) {
 	char buf[MAX_PACK_BYTES];
     // Send out data from outbox
@@ -84,14 +82,8 @@ int ConnectionManager::start(int port, const char* ip, char uid) {
 	}
 
 	if(ip) {
-		Packet p;
-		ClientConnect command;
-		command.set_id(this->uid);
-		command.set_user("Jim");
-		p.set_allocated_client_connect(&command);
-		
-		const char * buf = Packet().SerializeAsString().c_str();
-
+		// Send client info here
+		char buf[MAX_PACK_BYTES];
 		int bytes_out = sendto(sock, buf, strlen(buf) + 1, 0, (sockaddr*)&addr, sizeof(addr));
 		connections.push_back(create_connection(addr, &sock, 0));
 
@@ -114,8 +106,6 @@ int ConnectionManager::run() {
 	ZeroMemory(&buf, MAX_PACK_BYTES);
 
 	int bytes_in = recvfrom(sock, buf, MAX_PACK_BYTES, 0, (sockaddr*)&addr, &addr_len);
-	Packet pack;
-	pack.ParseFromArray(buf, strlen(buf));
 
 	if(bytes_in == SOCKET_ERROR) {
 		std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
@@ -125,9 +115,9 @@ int ConnectionManager::run() {
 	char ip[256];
 	inet_ntop(AF_INET, &addr.sin_addr, ip, 256);
 
-	if (pack.has_client_connect() && connections.size() <= MAX_CLIENTS) {
-		std::cout << "New client connection from " << ip << " with uid: " << pack.client_connect().id() << std::endl;
-		connections.push_back(create_connection(addr, &sock, pack.client_connect().id()));
+	if (connections.size() <= MAX_CLIENTS) {
+		std::cout << "New client connection from " << ip << " with uid: " << std::endl;
+		connections.push_back(create_connection(addr, &sock, buf[0]));
 	}
 
 	std::cout << "Received data: " << buf + 1 << std::endl;

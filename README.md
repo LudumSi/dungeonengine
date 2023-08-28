@@ -5,6 +5,7 @@
 - CMake
 - MSYS2
 - Mingw (via MSYS2)
+- Flatbuffers binary (https://github.com/google/flatbuffers/releases)
 
 ```
 pacman -S --needed base-devel mingw-w64-x86_64-toolchain

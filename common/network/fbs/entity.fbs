@@ -1,0 +1,12 @@
+namespace EntityBuffer;
+
+struct Vec3 {
+    x:float;
+    y:float;
+    z:float;
+}
+
+table Sample {
+    pos:Vec3;
+    name:string;
+}

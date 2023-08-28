@@ -1,0 +1,1 @@
+flatc -o ./common/network/fbs/ -c ./common/network/fbs/entity.fbs
