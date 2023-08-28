@@ -1,9 +1,5 @@
 #include "system.h"
 
-System::System(World* world){
-    this->world = world;
-}
-
 void System::register_entity(Entity e) {
 	entities.push_back(e);
 }

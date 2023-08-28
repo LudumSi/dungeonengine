@@ -13,7 +13,7 @@ class System {
 		World* world;
 	public:
 		
-		System(World* world);
+		System(World* world): world{world}{};
 
 		//Register entity
 		void register_entity(Entity);

@@ -15,6 +15,6 @@ enum class MoveCommand {
 
 struct PlayerControl {
 		float max_speed;
-		float max_acceleration;
-		glm::vec2 prev_movement;
+		float max_delta;
+		glm::vec2 player_velocity;
 };

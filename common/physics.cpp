@@ -1,8 +1,13 @@
 #include "physics.h"
+#include "transform.h"
 
 //Constant defining how many pixels per simulation meter
 #define PIXELS_PER_METER 64.f
 #define GRAVITY 9.8f
+
+PhysicsSystem::PhysicsSystem(World* world): System(world){
+	world->event_passer.subscribe(this, &PhysicsSystem::move_entity);
+};
 
 void PhysicsSystem::update(float delta_t) {
 
@@ -21,4 +26,10 @@ void PhysicsSystem::update(float delta_t) {
 		position->translate(physics->velocity * PIXELS_PER_METER * delta_t);
 	}
 
+}
+
+void PhysicsSystem::move_entity(MoveEntityEvent* e){
+
+	PhysicsComp* physics = world->get_component<PhysicsComp>(e->target);
+	physics->velocity += e->delta;
 }
