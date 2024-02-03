@@ -113,7 +113,7 @@ int main() {
     sockaddr_in server_hints;
     sockaddr_in client;
     int port = 7777;
-    const char * ip = "192.168.254.11";
+    const char * ip = "127.0.0.1";
 
     ConnectionManager c;
     c.start(port, nullptr, 0);

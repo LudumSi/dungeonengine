@@ -114,8 +114,9 @@ int ConnectionManager::start(int port, const char* ip, char uid) {
 	return 0;
 }
 
-int ConnectionManager::run() {
-	std::cout << "Running main update" << std::endl;
+int ConnectionManager::read() {
+
+	std::cout << "Reading Socket" << std::endl;
 	char buf[MAX_PACK_BYTES];
 	int addr_len = 0;
 
@@ -133,7 +134,7 @@ int ConnectionManager::run() {
 		std::cout << "Received data: " << bytes_in << std::endl;
 	}
 	// TODO: Decode more complex packets
-	uint8_t* binary_buf;
+	char binary_buf[MAX_PACK_BYTES];
 	memcpy(binary_buf, buf, bytes_in);
 	auto received_packet = DungeonEngine::EntityBuffer::GetConnectionCommand((uint8_t*) buf);
 
@@ -148,6 +149,31 @@ int ConnectionManager::run() {
 		connections.push_back(create_connection(addr, &sock, buf[0]));
 	}
 	*/
+
+	return 0;
+}
+
+int ConnectionManager::run() {
+
+	fd_set readset;
+	FD_ZERO(&readset);
+	FD_SET(sock, &readset);
+
+	struct timeval timeout;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
+
+	//Number of sockets which can be read, 0 if it times out, 
+	int selecterr = select(0, &readset, NULL, NULL, &timeout);
+
+	if(selecterr == SOCKET_ERROR){
+		std::cout << "Error receiving: " << WSAGetLastError() << std::endl;        
+		return SOCKET_ERROR;
+	}else if(selecterr > 0){
+		if(FD_ISSET(sock, &readset)) read();
+	}
+
+	//read();
 
 	return 0;
 }

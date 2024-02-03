@@ -213,7 +213,7 @@ int main() {
 	double accumulator = 0.0;
 
 	int port = 7777;
-    const char * ip = "192.168.254.11";
+    const char * ip = "127.0.0.1";
 	ConnectionManager c;
     c.start(port, ip, 0);
 
