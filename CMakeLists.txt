@@ -26,7 +26,7 @@ add_executable(client
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
-	common/network/network_manager.cpp
+	common/network/tcp_connection_manager.cpp
 )
 
 add_executable(server 
@@ -40,7 +40,7 @@ add_executable(server
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
-	common/network/network_manager.cpp
+	common/network/tcp_connection_manager.cpp
 )
 
 if(WIN32)
@@ -53,15 +53,11 @@ target_include_directories(client PRIVATE common)
 target_include_directories(client PRIVATE common/ecs)
 target_include_directories(client PRIVATE client)
 target_include_directories(client PRIVATE extern/freetype-2.12.1/include)
-#target_include_directories(client PRIVATE extern/protobuf/src)
-#target_include_directories(client PRIVATE extern/protobuf/third_party/abseil-cpp)
 
 target_include_directories(server PRIVATE include)
 target_include_directories(server PRIVATE common)
 target_include_directories(server PRIVATE common/ecs)
 target_include_directories(server PRIVATE client)
-#target_include_directories(server PRIVATE extern/protobuf/src)
-#target_include_directories(client PRIVATE extern/protobuf/third_party/abseil-cpp)
 
 # Set up flatbuffers
 add_subdirectory(extern/flatbuffers ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-build EXCLUDE_FROM_ALL)

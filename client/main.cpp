@@ -11,6 +11,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <network/tcp_connection_manager.h>
+
 #include "graphics/texture_atlas.h"
 #include "graphics/sprite.h"
 #include "graphics/sprite_render.h"
@@ -18,7 +20,6 @@
 #include "playercontrol.h"
 #include "control.h"
 #include "graphics/text_render.h"
-#include "network/network_manager.h"
 
 #include "Client.h"
 #include <mutex>
@@ -214,13 +215,14 @@ int main() {
 
 	int port = 7777;
     const char * ip = "127.0.0.1";
-	ConnectionManager c;
-    c.start(port, ip, 0);
+	TCPClientManager network_manager(ip, port);
+    network_manager.connect();
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{
-		
+		network_manager.update();
+
 		//TODO: Linear interpolation of frames based on accumulator
 		//Should make things move smoother
 		// https://www.gafferongames.com/post/fix_your_timestep/
@@ -248,6 +250,8 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	network_manager.disconnect();
 
 	//Destroy the window
 	glfwDestroyWindow(window);
