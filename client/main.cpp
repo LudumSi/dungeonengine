@@ -214,9 +214,9 @@ int main() {
 	double accumulator = 0.0;
 
 	int port = 7777;
-    const char * ip = "127.0.0.1";
-	TCPClientManager network_manager(ip, port);
-    network_manager.connect();
+    const char * ip = "192.168.254.11";
+	TCPClientManager network_manager;
+    network_manager.connect_to_server(ip, port);
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
@@ -251,7 +251,7 @@ int main() {
 		glfwPollEvents();
 	}
 
-	network_manager.disconnect();
+	network_manager.disconnect_from_server();
 
 	//Destroy the window
 	glfwDestroyWindow(window);
