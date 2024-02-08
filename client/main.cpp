@@ -216,7 +216,8 @@ int main() {
 	int port = 7777;
     const char * ip = "192.168.254.11";
 	TCPClientManager network_manager;
-    network_manager.connect_to_server(ip, port);
+	network_manager.set_server_info(ip, port);
+    network_manager.connect_to_server();
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))

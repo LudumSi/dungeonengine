@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <vector>
 
 //#include <entity.h>
 //#include <component.h>
@@ -22,13 +23,12 @@ private:
     const char* ip = nullptr;
     int port;
 
-
-
 public:
     // Connect and disconnect implemented as separate functions from constructor/destructor to allow changing servers in the future.
-    TCPClientManager(void);
-    ~TCPClientManager(void);
-    int connect_to_server(const char*, int); 
+    TCPClientManager();
+    ~TCPClientManager();
+    void set_server_info(const char*, int);
+    int connect_to_server();
     int disconnect_from_server(void);
     void update(void);
 };
@@ -36,16 +36,20 @@ public:
 class TCPServerManager {
 private:
     SOCKET client_listener = INVALID_SOCKET;
-    SOCKET client_socket = INVALID_SOCKET;
-    FD_SET read_set;
+    std::vector<SOCKET> socks;
+    //SOCKET client_socket = INVALID_SOCKET;
+    FD_SET read_set; // not to be confused with the macro FD_SET
     FD_SET write_set;
     
     int port;
 
+    void check_connections(void);
+
 public:
     TCPServerManager(int);
-    ~TCPServerManager(void);
+    ~TCPServerManager();
 
     int init(void);
     void update(void);
+
 };

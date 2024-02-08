@@ -18,7 +18,6 @@ int main() {
         TCPServerManager network_manager(port);
         std::cout << "Initialized Network Manager" << std::endl;
         while(1) {
-            std::cout << "Updating Network Manager" << std::endl;
             try {
                 network_manager.update();
             }
