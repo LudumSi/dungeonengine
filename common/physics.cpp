@@ -6,7 +6,7 @@
 #define GRAVITY 9.8f
 
 PhysicsSystem::PhysicsSystem(World* world): System(world){
-	world->event_passer.subscribe(this, &PhysicsSystem::move_entity);
+	world->subscribe_event(this, &PhysicsSystem::move_entity);
 };
 
 void PhysicsSystem::update(float delta_t) {

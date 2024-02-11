@@ -70,7 +70,7 @@ void ControlSystem::update(float dt) {
 		player->player_velocity += delta_v;
 
 		//Apply new velocity
-		world->event_passer.broadcast(new MoveEntityEvent(entity, delta_v));
+		world->broadcast(new MoveEntityEvent(entity, delta_v));
 
 		//Update camera position
 		camera->set_camera(glm::vec2(transform->get_position()));

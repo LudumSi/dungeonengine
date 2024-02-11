@@ -77,7 +77,8 @@
         "regex": "cpp",
         "future": "cpp",
         "typeindex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "charconv": "cpp"
     },
     "cmake.generator": "MSYS Makefiles",
     "cmake.configureSettings": {

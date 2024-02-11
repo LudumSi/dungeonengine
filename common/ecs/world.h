@@ -12,7 +12,7 @@
 class EntityHandle;
 
 //Stores and manages all component managers
-class ComponentRegistrar{
+class ComponentRegistry{
 
 	private:
 		//Map of component ids to component managers
@@ -103,64 +103,116 @@ class ComponentRegistrar{
 		}
 };
 
-class World {
+class SystemRegistry{
+
+	private:
+		//Vector of systems
+		std::vector<System*> systems;
+
+		//Maps of comp types to systems
+		std::unordered_multimap<CompID, System*> comp_type_to_system;
+		std::unordered_multimap<System*, CompID> system_to_comp_type;
+
+		//Check to see whether an entity has all the components a given system cares about
+		bool has_system_components(Entity e, System* sys, ComponentRegistry* comp_reg){
+
+			bool has_all = true;
+
+			//See if the entity now has all the components the system cares about
+			auto range = system_to_comp_type.equal_range(sys);
+			for(auto it = range.first; it != range.second; ++it){
+				
+				if(!comp_reg->has_component_by_id(e, it->second)){
+					has_all = false;
+					break;
+				}
+			}
+			return has_all;
+		}
 
 	public:
 
-		//Event handler for system events
-		EventPasser event_passer;
-
-		//Create an entity handle
-		EntityHandle create_entity();
-
-		//Delete an entity entirely
-		//Probably has some fairly large overhead
-		void delete_entity(Entity e) {
-
-			comp_reg.delete_entity(e);
-
+		void delete_entity(Entity e){
 			//Remove the entity from all systems
 			for (int i = 0; i < systems.size(); i++) {
 				systems[i]->deregister_entity(e);
 			}
 		}
 
-		//Add a component to an entity
-		//Also updates systems entity lists
 		template <typename CompType>
-		void add_component(Entity e, CompType comp) {
-
-			comp_reg.add_component(e,comp);
-
-			//Update systems about this change
-			//Iterate through all systems which use this component
+		void add_component(Entity e, CompType comp, ComponentRegistry* comp_reg){
+			//Iterate through all systems which use this component and add it if it has the full suite of components
 			auto range = comp_type_to_system.equal_range(get_comp_id<CompType>());
 			for(auto it = range.first; it != range.second; ++it){
-
 				//If so, add the entity
-				if(has_system_components(e, it->second)){
+				if(has_system_components(e, it->second, comp_reg)){
 					it->second->register_entity(e);
 				}
 			}
 		}
 
-		//Remove a given component from an entity
-		//Also updates systems
 		template <typename CompType>
 		void remove_component(Entity e) {
-
-			comp_reg.remove_component<CompType>(e);
-
-			//Update systems about this change
-			//Iterate through all systems which use this component
+			//Iterate through all systems which use this component and deregister the entity
 			auto range = comp_type_to_system.equal_range(get_comp_id<CompType>);
 			for(auto it = range.first; it != range.second; ++it){
+				it->second->deregister_entity(e);
+			}
+		}
 
-				//If so, add the entity
-				if(has_system_components(e, it->second)){
-					it->second->deregister_entity(e);
+		//Subscribe a system to changes in a given component type
+		//Adds the system if it hasn't been already
+		template <typename CompType>
+		void subscribe_system(System* sys) {
+
+			bool already_added = false;
+			for(int i = 0; i < systems.size(); i++){
+				if(systems[i] == sys){
+					already_added = true;
+					break;
 				}
 			}
+
+			if(!already_added){
+				systems.push_back(sys);
+			}
+
+			CompID comp_id = get_comp_id<CompType>();
+
+			comp_type_to_system.insert(std::pair<CompID, System*>(comp_id,sys));
+			system_to_comp_type.insert(std::pair<System*, CompID>(sys,comp_id));
+		}
+};
+
+//Interface class for everything which makes the ECS system work
+class World {
+
+	public:
+
+		//Create an entity handle
+		EntityHandle create_entity();
+
+		//Delete an entity entirely
+		void delete_entity(Entity e) {
+
+			comp_reg.delete_entity(e);
+			sys_reg.delete_entity(e);
+		}
+
+		//Add a component to an entity
+		//Also updates systems entity lists
+		template <typename CompType>
+		void add_component(Entity e, CompType comp) {
+			comp_reg.add_component(e,comp);
+			sys_reg.add_component(e,comp,&comp_reg);
+		}
+
+		//Remove a given component from an entity
+		//Also updates systems entity lists
+		template <typename CompType>
+		void remove_component(Entity e) {
+			comp_reg.remove_component<CompType>(e);
+			sys_reg.remove_component<CompType>(e);
 		}
 
 		//Sees if the entity has the given component
@@ -182,63 +234,32 @@ class World {
 		}
 
 		//Subscribe a system to changes in a given component type
-		//Adds the system if it hasn't been already
 		template <typename CompType>
 		void subscribe_system(System* sys) {
-
-			bool already_added = false;
-			for(int i = 0; i < systems.size(); i++){
-				if(systems[i] == sys){
-					already_added = true;
-					break;
-				}
-			}
-
-			if(!already_added){
-				add_system(sys);
-			}
-
-			CompID comp_id = get_comp_id<CompType>();
-
-			comp_type_to_system.insert(std::pair<CompID, System*>(comp_id,sys));
-			system_to_comp_type.insert(std::pair<System*, CompID>(sys, comp_id));
+			sys_reg.subscribe_system<CompType>(sys);
 		}
-		
-		//Add a system
-		void add_system(System* sys) {
-			systems.push_back(sys);
+
+		template<class T, class EventType>
+        void subscribe_event(T* system, void(T::*handler)(EventType*)){
+			event_reg.subscribe(system, handler);
+		}
+
+		template<class EventType>
+        void broadcast(EventType* event){
+			event_reg.broadcast(event);
 		}
 
 	private:
 
-		//Check to see whether an entity has all the components a given system cares about
-		bool has_system_components(Entity e, System* sys){
-
-			bool has_all = true;
-
-			//See if the entity now has all the components the system cares about
-			auto range = system_to_comp_type.equal_range(sys);
-			for(auto it = range.first; it != range.second; ++it){
-				
-				if(!comp_reg.has_component_by_id(e, it->second)){
-					has_all = false;
-					break;
-				}
-			}
-
-			return has_all;
-		}
-
 		//Entity manager
 		EntityManager e_manager;
 
-		//Register of all components
-		ComponentRegistrar comp_reg;
+		//Stores component managers, interface to them
+		ComponentRegistry comp_reg;
 
-		//Vector of systems
-		std::vector<System*> systems;
+		//Maintains system component subscriptions; does not store systems
+		SystemRegistry sys_reg;
 
-		//Map of manager pointers to vectors of indices of systems which need to be updated
-		std::unordered_multimap<CompID, System*> comp_type_to_system;
-		std::unordered_multimap<System*, CompID> system_to_comp_type;
+		//Event handler for system events
+		EventRegistry event_reg;
 };

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "entity.h"
+#include "component.h"
 
 class World;
 class System {

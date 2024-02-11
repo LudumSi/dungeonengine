@@ -48,7 +48,7 @@ class EventHandlerWrapper: public EventHandlerWrapperBase{
 };
 
 //Event passer class
-class EventPasser{
+class EventRegistry{
 
     public:
 

@@ -33,16 +33,6 @@
                 "command": "${workspaceFolder}/scripts/generate_fb.sh"
             }
         }
-        {
-            "label": "generate protobuf",
-            "type": "shell",
-            "windows" : {
-                "command": ".\\scripts\\generate_proto.bat"
-            },
-            "linux" : {
-                "command": "./scripts/generate_proto.sh"
-            }
-        }
     ],
     "version": "2.0.0"
 }

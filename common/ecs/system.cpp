@@ -1,4 +1,5 @@
 #include "system.h"
+#include "world.h"
 
 void System::register_entity(Entity e) {
 	entities.push_back(e);
