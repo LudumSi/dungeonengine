@@ -65,6 +65,7 @@ void ConnectionManager::add_message(std::string message, char uid) {
 	}
 }
 
+//Server uses null IP
 int ConnectionManager::start(int port, const char* ip, char uid) {
 	this->ip = ip;
 	this->port = port;
