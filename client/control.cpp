@@ -2,6 +2,10 @@
 #include "physics.h"
 
 ControlSystem::ControlSystem(World* world, std::queue<MoveCommand>* actions, Camera* camera): System(world) {
+
+	world->subscribe_system<PhysicsComp>(this);
+	world->subscribe_system<Transform>(this);
+
 	this->camera = camera;
 	this->actions = actions;
 	this->up = 0;

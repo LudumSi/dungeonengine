@@ -102,6 +102,9 @@ Font generate_font(FT_Library lib){
 
 TextRenderSystem::TextRenderSystem(World* world, Camera* camera): System(world) {
 
+	world->subscribe_system<TextComp>(this);
+	world->subscribe_system<Transform>(this);
+
 	this->camera = camera;
 
 	//Set up shaders

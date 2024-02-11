@@ -6,6 +6,9 @@
 #define GRAVITY 9.8f
 
 PhysicsSystem::PhysicsSystem(World* world): System(world){
+	world->subscribe_system<Transform>(this);
+	world->subscribe_system<PhysicsComp>(this);
+
 	world->subscribe_event(this, &PhysicsSystem::move_entity);
 };
 

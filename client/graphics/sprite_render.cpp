@@ -5,6 +5,9 @@
 
 SpriteRenderSystem::SpriteRenderSystem(World* world, Camera* camera, TextureAtlas* atlas): System(world) {
 
+	world->subscribe_system<Transform>(this);
+	world->subscribe_system<Sprite>(this);
+
 	this->camera = camera;
 
 	//Set up shaders

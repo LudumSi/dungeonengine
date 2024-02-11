@@ -164,20 +164,9 @@ int main() {
 	world.add_manager<TextComp>();
 
 	SpriteRenderSystem renderer = SpriteRenderSystem(&world, camera, &atlas);
-	world.subscribe_system<Transform>(&renderer);
-	world.subscribe_system<Sprite>(&renderer);
-	
 	PhysicsSystem physics = PhysicsSystem(&world);
-	world.subscribe_system<Transform>(&physics);
-	world.subscribe_system<PhysicsComp>(&physics);
-	
 	ControlSystem control = ControlSystem(&world, &actionqueue, camera);
-	world.subscribe_system<PhysicsComp>(&control);
-	world.subscribe_system<Transform>(&control);
-
 	TextRenderSystem textrender = TextRenderSystem(&world, camera);
-	world.subscribe_system<TextComp>(&textrender);
-	world.subscribe_system<Transform>(&textrender);
 
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(Sprite(&atlas, "entities/wiz"));
@@ -252,7 +241,7 @@ int main() {
 		glfwPollEvents();
 	}
 
-	network_manager.disconnect_from_server();
+	//network_manager.disconnect_from_server();
 
 	//Destroy the window
 	glfwDestroyWindow(window);
