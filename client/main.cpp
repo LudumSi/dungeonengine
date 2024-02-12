@@ -156,17 +156,22 @@ int main() {
 	atlas.add_image("assets/entities/wiz.png");
 
 	//Set up ECS
-	World world;
-	world.add_manager<Sprite>();
-	world.add_manager<Transform>();
-	world.add_manager<PhysicsComp>();
-	world.add_manager<PlayerControl>();
-	world.add_manager<TextComp>();
+	ComponentRegistry comp_reg;
+	SystemRegistry sys_reg(&comp_reg);
+	EntityInterface world(&comp_reg, &sys_reg);
+	EventRegistry event_reg;
+	ECSHandle handle(&comp_reg, &sys_reg, &event_reg);
 
-	SpriteRenderSystem renderer = SpriteRenderSystem(&world, camera, &atlas);
-	PhysicsSystem physics = PhysicsSystem(&world);
-	ControlSystem control = ControlSystem(&world, &actionqueue, camera);
-	TextRenderSystem textrender = TextRenderSystem(&world, camera);
+	comp_reg.add_manager<Sprite>();
+	comp_reg.add_manager<Transform>();
+	comp_reg.add_manager<PhysicsComp>();
+	comp_reg.add_manager<PlayerControl>();
+	comp_reg.add_manager<TextComp>();
+
+	SpriteRenderSystem renderer = SpriteRenderSystem(&handle, camera, &atlas);
+	PhysicsSystem physics = PhysicsSystem(&handle);
+	ControlSystem control = ControlSystem(&handle, &actionqueue, camera);
+	TextRenderSystem textrender = TextRenderSystem(&handle, camera);
 
 	EntityHandle test = world.create_entity();
 	test.add<Sprite>(Sprite(&atlas, "entities/wiz"));
@@ -184,7 +189,6 @@ int main() {
 
 	EntityHandle ptest3 = world.create_entity();
 	Sprite test_sprite = Sprite(&atlas, "FUCK");
-	void* test_pointer = &test_sprite;
 	ptest3.add<Sprite>(Sprite(&atlas, "debug/ass"));
 	ptest3.add<Transform>(Transform(300.f, 300.f));
 
@@ -202,16 +206,16 @@ int main() {
 	double current_time = get_time_ms();
 	double accumulator = 0.0;
 
-	int port = 7777;
-    const char * ip = "192.168.254.11";
-	TCPClientManager network_manager;
-	network_manager.set_server_info(ip, port);
-    network_manager.connect_to_server();
+	//int port = 7777;
+    //const char * ip = "192.168.254.11";
+	//TCPClientManager network_manager;
+	//network_manager.set_server_info(ip, port);
+    //network_manager.connect_to_server();
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))
 	{
-		network_manager.update();
+		//network_manager.update();
 
 		//TODO: Linear interpolation of frames based on accumulator
 		//Should make things move smoother

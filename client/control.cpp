@@ -1,10 +1,10 @@
 #include "control.h"
 #include "physics.h"
 
-ControlSystem::ControlSystem(World* world, std::queue<MoveCommand>* actions, Camera* camera): System(world) {
+ControlSystem::ControlSystem(ECSHandle* handle, std::queue<MoveCommand>* actions, Camera* camera): System(handle) {
 
-	world->subscribe_system<PhysicsComp>(this);
-	world->subscribe_system<Transform>(this);
+	handle->subscribe_system<PhysicsComp>(this);
+	handle->subscribe_system<Transform>(this);
 
 	this->camera = camera;
 	this->actions = actions;
@@ -49,8 +49,8 @@ void ControlSystem::update(float dt) {
 
 	for (auto & entity : entities) {
 
-		PlayerControl* player = world->get_component<PlayerControl>(entity);
-		Transform* transform = world->get_component<Transform>(entity);
+		PlayerControl* player = handle->get_component<PlayerControl>(entity);
+		Transform* transform = handle->get_component<Transform>(entity);
 
 		if (!player || !transform) continue;
 
@@ -74,7 +74,7 @@ void ControlSystem::update(float dt) {
 		player->player_velocity += delta_v;
 
 		//Apply new velocity
-		world->broadcast(new MoveEntityEvent(entity, delta_v));
+		handle->broadcast(new MoveEntityEvent(entity, delta_v));
 
 		//Update camera position
 		camera->set_camera(glm::vec2(transform->get_position()));

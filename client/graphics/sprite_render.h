@@ -15,6 +15,6 @@ class SpriteRenderSystem : public System {
 
 	public:
 	
-		SpriteRenderSystem(World* world, Camera* camera, TextureAtlas* atlas);
+		SpriteRenderSystem(ECSHandle* handle, Camera* camera, TextureAtlas* atlas);
 		void render();
 };

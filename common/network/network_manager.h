@@ -11,7 +11,6 @@
 
 #include <entity.h>
 #include <component.h>
-#include <world.h>
 #include <network/fbs/entity_generated.h>
 
 //#pragma comment(lib,"ws2_32.lib") //Winsock Library
@@ -64,7 +63,6 @@ private:
 	const char* ip;
 	int port;
 	char uid;
-	World * world;
 
 	int winsock_init();
 	int bind_listener();

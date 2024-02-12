@@ -37,7 +37,7 @@ class TextRenderSystem : public System {
 
 	public:
 	
-		TextRenderSystem(World* world, Camera* camera);
+		TextRenderSystem(ECSHandle* handle, Camera* camera);
 		void render();
         void generate_VAO(TextComp* comp);
 };

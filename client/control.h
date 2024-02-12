@@ -19,6 +19,6 @@ class ControlSystem : public System {
 
 	public:
 
-		ControlSystem(World* world, std::queue<MoveCommand>* actions, Camera* camera);
+		ControlSystem(ECSHandle* handle, std::queue<MoveCommand>* actions, Camera* camera);
 		void update(float delta);
 };

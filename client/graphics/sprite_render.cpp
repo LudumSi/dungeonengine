@@ -3,10 +3,10 @@
 #include "glad\glad.h"
 #include "glm\gtc\type_ptr.hpp"
 
-SpriteRenderSystem::SpriteRenderSystem(World* world, Camera* camera, TextureAtlas* atlas): System(world) {
+SpriteRenderSystem::SpriteRenderSystem(ECSHandle* handle, Camera* camera, TextureAtlas* atlas): System(handle) {
 
-	world->subscribe_system<Transform>(this);
-	world->subscribe_system<Sprite>(this);
+	handle->subscribe_system<Transform>(this);
+	handle->subscribe_system<Sprite>(this);
 
 	this->camera = camera;
 
@@ -38,8 +38,8 @@ void SpriteRenderSystem::render() {
 	//Draw all sprites in the sprites
 	for (auto & entity : entities) {
 
-		Sprite* sprite = world->get_component<Sprite>(entity);
-		Transform* position = world->get_component<Transform>(entity);
+		Sprite* sprite = handle->get_component<Sprite>(entity);
+		Transform* position = handle->get_component<Transform>(entity);
 
 		if(!sprite || !position) continue;
 

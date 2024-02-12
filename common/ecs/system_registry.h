@@ -39,7 +39,7 @@ class SystemRegistry{
 
 	public:
 
-        SystemRegistry(ComponentRegistry* reg);
+        SystemRegistry(ComponentRegistry* reg): comp_reg(reg) {};
 
 		void delete_entity(Entity e);
 

@@ -19,10 +19,11 @@ add_executable(client
 	client/control.cpp
 	common/ecs/entity.cpp
 	common/ecs/system.cpp
-	common/ecs/world.cpp
 	common/ecs/entityhandle.cpp
 	common/ecs/component.cpp
 	common/ecs/event.cpp
+	common/ecs/system_registry.cpp
+	common/ecs/entity_interface.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp
@@ -33,10 +34,11 @@ add_executable(server
 	server/main.cpp
 	common/ecs/entity.cpp
 	common/ecs/system.cpp
-	common/ecs/world.cpp
 	common/ecs/entityhandle.cpp
 	common/ecs/component.cpp
 	common/ecs/event.cpp
+	common/ecs/system_registry.cpp
+	common/ecs/entity_interface.cpp
 	common/glad.c
 	common/physics.cpp
 	common/transform.cpp

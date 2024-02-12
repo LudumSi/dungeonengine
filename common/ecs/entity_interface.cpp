@@ -1,5 +1,3 @@
-#pragma once
-
 #include "entity_interface.h"
 #include "entityhandle.h"
 

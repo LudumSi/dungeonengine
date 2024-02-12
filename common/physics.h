@@ -18,7 +18,7 @@ class PhysicsSystem : public System {
 
 	public:
 
-		PhysicsSystem(World* world);
+		PhysicsSystem(ECSHandle* handle);
 		void update(float delta);
 
 		void move_entity(MoveEntityEvent*);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "entityhandle.h"
 #include "comp_registry.h"
 #include "system_registry.h"
 
@@ -34,7 +33,7 @@ class EntityInterface {
 		template <typename CompType>
 		void add_component(Entity e, CompType comp) {
 			comp_reg->add_component(e,comp);
-			sys_reg->add_component(e,comp,&comp_reg);
+			sys_reg->add_component(e,comp);
 		}
 
 		//Remove a given component from an entity

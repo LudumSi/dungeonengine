@@ -100,10 +100,10 @@ Font generate_font(FT_Library lib){
     return new_font;
 }
 
-TextRenderSystem::TextRenderSystem(World* world, Camera* camera): System(world) {
+TextRenderSystem::TextRenderSystem(ECSHandle* handle, Camera* camera): System(handle) {
 
-	world->subscribe_system<TextComp>(this);
-	world->subscribe_system<Transform>(this);
+	handle->subscribe_system<TextComp>(this);
+	handle->subscribe_system<Transform>(this);
 
 	this->camera = camera;
 
@@ -212,8 +212,8 @@ void TextRenderSystem::render() {
 	//Draw all sprites in the sprites
 	for (auto & entity : entities) {
 
-		TextComp* text = world->get_component<TextComp>(entity);
-		Transform* position = world->get_component<Transform>(entity);
+		TextComp* text = handle->get_component<TextComp>(entity);
+		Transform* position = handle->get_component<Transform>(entity);
 
 		if(!text->VAO_generated){
 			generate_VAO(text);
