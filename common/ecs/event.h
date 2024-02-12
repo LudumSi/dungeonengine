@@ -1,7 +1,10 @@
 #pragma once
 
-#include "system.h"
 #include <unordered_map>
+#include <cstdint>
+
+//Dummy system class
+class System;
 
 //Event ID system, copied from components
 typedef uint64_t EventID;

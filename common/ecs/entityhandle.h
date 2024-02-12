@@ -1,37 +1,37 @@
 #pragma once
 
 #include "entity.h"
-#include "world.h"
+#include "entity_interface.h"
 
 //Entity handle, for making working with entities easier
 class EntityHandle {
 
 public:
 	Entity entity;
-	World* world;
-	EntityHandle(Entity, World*);
+	EntityInterface* inter;
+	EntityHandle(Entity, EntityInterface*);
 
 	void destroy() {
-		world->delete_entity(entity);
+		inter->delete_entity(entity);
 	};
 
 	template <typename CompType>
 	void add(CompType c) {
-		world->add_component<CompType>(entity, c);
+		inter->add_component<CompType>(entity, c);
 	}
 
 	template <typename CompType>
 	void remove() {
-		world->remove_component<CompType>(entity);
+		inter->remove_component<CompType>(entity);
 	}
 
 	template <typename CompType>
 	bool has() {
-		return world->has_component<CompType>(entity);
+		return inter->has_component<CompType>(entity);
 	}
 
 	template <typename CompType>
 	CompType* get() {
-		return world->get_component<CompType>(entity);
+		return inter->get_component<CompType>(entity);
 	}
 };

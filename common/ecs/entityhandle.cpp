@@ -1,7 +1,7 @@
 #include "entityhandle.h"
 
 //Entity handle class
-EntityHandle::EntityHandle(Entity e, World* w) {
+EntityHandle::EntityHandle(Entity e, EntityInterface* r) {
 	entity = e;
-	world = w;
+	inter = r;
 }

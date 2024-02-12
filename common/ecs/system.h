@@ -2,7 +2,8 @@
 
 #include <vector>
 #include "entity.h"
-#include "component.h"
+#include "comp_registry.h"
+#include "ecshandle.h"
 
 class World;
 class System {
@@ -11,10 +12,10 @@ class System {
 		//Array of entities the system cares about
 		std::vector<Entity> entities;
 		//World the system belongs to
-		World* world;
+		ECSHandle* handle;
 	public:
 		
-		System(World* world): world{world}{};
+		System(ECSHandle* handle): handle(handle){};
 
 		//Register entity
 		void register_entity(Entity);
