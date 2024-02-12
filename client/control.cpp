@@ -3,8 +3,8 @@
 
 ControlSystem::ControlSystem(ECSHandle* handle, std::queue<MoveCommand>* actions, Camera* camera): System(handle) {
 
-	handle->subscribe_system<PhysicsComp>(this);
-	handle->subscribe_system<Transform>(this);
+	subscribe<PhysicsComp>();
+	subscribe<Transform>();
 
 	this->camera = camera;
 	this->actions = actions;

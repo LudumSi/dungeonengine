@@ -5,8 +5,8 @@
 
 SpriteRenderSystem::SpriteRenderSystem(ECSHandle* handle, Camera* camera, TextureAtlas* atlas): System(handle) {
 
-	handle->subscribe_system<Transform>(this);
-	handle->subscribe_system<Sprite>(this);
+	subscribe<Transform>();
+	subscribe<Sprite>();
 
 	this->camera = camera;
 

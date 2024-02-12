@@ -21,4 +21,10 @@ class System {
 		void register_entity(Entity);
 		//Unregister entity
 		void deregister_entity(Entity);
+
+		//susbscribe to a component
+		template <typename CompType>
+		void subscribe(){
+			handle->subscribe_system<CompType>(this);
+		}
 };

@@ -102,8 +102,8 @@ Font generate_font(FT_Library lib){
 
 TextRenderSystem::TextRenderSystem(ECSHandle* handle, Camera* camera): System(handle) {
 
-	handle->subscribe_system<TextComp>(this);
-	handle->subscribe_system<Transform>(this);
+	subscribe<TextComp>();
+	subscribe<Transform>();
 
 	this->camera = camera;
 

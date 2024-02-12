@@ -6,8 +6,8 @@
 #define GRAVITY 9.8f
 
 PhysicsSystem::PhysicsSystem(ECSHandle* handle): System(handle){
-	handle->subscribe_system<Transform>(this);
-	handle->subscribe_system<PhysicsComp>(this);
+	subscribe<Transform>();
+	subscribe<PhysicsComp>();
 
 	handle->subscribe_event(this, &PhysicsSystem::move_entity);
 };
