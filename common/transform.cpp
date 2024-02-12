@@ -35,3 +35,10 @@ void Transform::set_scale(float scale) {
 	this->transform = glm::scale(this->transform, glm::vec3(scale, scale, scale));
 }
 
+void Transform::rotate(glm::vec2 hub, float angle){
+	glm::vec3 offset = glm::vec3(hub.x, hub.y, 0.f);
+	this->transform = glm::translate(this->transform, -1.f * offset);
+	this->transform = glm::rotate(this->transform, angle, glm::vec3(0.f,0.f,1.f));
+	this->transform = glm::translate(this->transform, offset);
+}
+

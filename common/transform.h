@@ -23,6 +23,6 @@ class Transform {
 		//Radians
 		float get_rotation();
 		void set_rotation(float angle);
-		void rotate(float angle);
+		void rotate(glm::vec2 hub, float angle);
 };
 
